@@ -1,0 +1,26 @@
+{
+  "name": "mehrnaz-arshad-website",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "fetch-images": "python scripts/fetch-images.py",
+    "manifest": "node scripts/build-manifest.mjs",
+    "prebuild": "python scripts/fetch-images.py && node scripts/build-manifest.mjs",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "next": "^15.3.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "image-size": "^2.0.2",
+    "typescript": "^5"
+  }
+}

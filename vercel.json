@@ -1,0 +1,5 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "installCommand": "npm install",
+  "buildCommand": "pip3 install gdown && python3 scripts/fetch-images.py && node scripts/build-manifest.mjs && next build"
+}

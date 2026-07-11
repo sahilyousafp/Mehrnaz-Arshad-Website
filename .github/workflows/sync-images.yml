@@ -1,0 +1,25 @@
+name: Sync images from Google Drive
+
+on:
+  schedule:
+    - cron: "17 4 * * *"        # daily at 04:17 UTC (odd minute = punctual, doc 3)
+  workflow_dispatch:             # manual "Run workflow" button for on-demand syncs
+
+permissions: {}                  # needs no access to the repo at all (doc 4)
+
+concurrency:
+  group: drive-sync
+  cancel-in-progress: true       # a newer sync supersedes an in-flight one (doc 3)
+
+jobs:
+  trigger-rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Vercel deployment via deploy hook
+        run: |
+          echo "Triggered by: ${{ github.event_name }}"
+          curl --fail --silent --show-error --retry 3 --retry-delay 10 \
+            -X POST "$DEPLOY_HOOK"
+          echo "Vercel deployment triggered. Watch it at the Vercel dashboard."
+        env:
+          DEPLOY_HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
