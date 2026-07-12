@@ -1,7 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import LogoWall from "@/components/LogoWall";
+import Parallax from "@/components/Parallax";
 import Reveal from "@/components/Reveal";
+import Ribbons from "@/components/Ribbons";
 import { NavLinks } from "@/components/SiteHeader";
 import Wordmark from "@/components/Wordmark";
 import WorldMap from "@/components/WorldMap";
@@ -71,6 +73,9 @@ export default function Home() {
           className="hero2__bg"
         />
         <div className="hero2__shade" />
+        <div className="hero2__ribbons" aria-hidden>
+          <Ribbons colors={["#ffffff"]} baseThickness={30} speedMultiplier={0.5} maxAge={500} enableFade enableShaderEffect />
+        </div>
         <Wordmark text="MEHRNAZ ARSHAD" className="hero2__mark" />
         <div className="hero2__nav" data-hero-nav>
           <NavLinks />
@@ -170,12 +175,14 @@ export default function Home() {
           {visibleProjects.map((project) => (
             <Link key={project.slug} href={`/projects/${project.slug}`} className="card">
               <div className="card__media">
-                <Image
-                  src={imagePath(project.slug, heroImage(project).file)}
-                  alt={projectAlt(project)}
-                  fill
-                  sizes="(max-width: 860px) 100vw, 50vw"
-                />
+                <Parallax>
+                  <Image
+                    src={imagePath(project.slug, heroImage(project).file)}
+                    alt={projectAlt(project)}
+                    fill
+                    sizes="(max-width: 860px) 100vw, 50vw"
+                  />
+                </Parallax>
               </div>
               <h2 className="card__title">
                 {projectTitle(project)} {project.location?.split(",")[0] ?? ""}

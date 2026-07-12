@@ -24,10 +24,19 @@ export function gallery(slug: string): GalleryImage[] {
   return manifest[slug] ?? [];
 }
 
-// Raw Drive folder name per slug, written by scripts/fetch-images.py. Only
+// Structured metadata per slug (year/event/client/location/partner, parsed
+// from the Drive folder hierarchy), written by scripts/fetch-images.py. Only
 // used to synthesize entries for folders not yet curated below, so a missing
 // file (e.g. local dev before the first fetch) just means no auto entries.
-let driveFolders: Record<string, string>;
+type DriveFolderMeta = {
+  year: number | null;
+  event: string;
+  client: string;
+  location: string | null;
+  partner: string | null;
+};
+
+let driveFolders: Record<string, DriveFolderMeta>;
 try {
   driveFolders = JSON.parse(
     readFileSync(join(process.cwd(), "content", "drive-folders.json"), "utf8"),
@@ -36,24 +45,17 @@ try {
   driveFolders = {};
 }
 
-const FOLDER_NAME_PATTERN = " - ";
-
-/** Parses the "Year - Event - Client - Location - Partner" convention; falls
- * back to using the raw name as the client when a folder doesn't match it. */
-function parseFolderName(raw: string): Omit<Project, "slug" | "hero" | "boothSize"> {
-  const parts = raw.split(FOLDER_NAME_PATTERN).map((s) => s.trim());
-  if (parts.length === 5) {
-    const [yearStr, event, client, location, partner] = parts;
-    const year = Number(yearStr);
-    if (client && event && location && partner && /^\d{4}$/.test(yearStr) && Number.isInteger(year)) {
-      return { client, event, location, year, partner };
-    }
-  }
-  console.warn(
-    `[content] Drive folder "${raw}" doesn't match the "Year - Event - Client - Location - Partner" ` +
-      "naming convention - showing it with just the folder name until it's renamed or curated in content/projects.ts.",
-  );
-  return { client: raw };
+function autoProject(slug: string): Project {
+  const meta = driveFolders[slug];
+  if (!meta) return { slug, client: slug };
+  return {
+    slug,
+    client: meta.client,
+    event: meta.event,
+    location: meta.location ?? undefined,
+    year: meta.year ?? undefined,
+    partner: meta.partner ?? undefined,
+  };
 }
 
 const curatedSlugs = new Set(projects.map((p) => p.slug));
@@ -62,7 +64,7 @@ const curatedSlugs = new Set(projects.map((p) => p.slug));
 const autoProjects: Project[] = Object.keys(manifest)
   .filter((slug) => !curatedSlugs.has(slug) && gallery(slug).length > 0)
   .sort()
-  .map((slug) => ({ slug, ...parseFolderName(driveFolders[slug] ?? slug) }));
+  .map(autoProject);
 
 /** Projects that have at least one image synced from Drive: curated first
  * (so homepage hero/intro picks stay stable), then auto-detected ones. */

@@ -213,6 +213,11 @@ a {
   background: linear-gradient(180deg, rgba(0, 0, 0, 0.42) 0%, rgba(0, 0, 0, 0.18) 40%, rgba(0, 0, 0, 0.55) 100%);
 }
 
+.hero2__ribbons {
+  position: absolute;
+  inset: 0;
+}
+
 .hero2__mark {
   position: relative;
   padding: 0.6rem var(--gutter) 0;
@@ -387,15 +392,24 @@ a {
   aspect-ratio: 4 / 3;
   overflow: hidden;
   background: #ececec;
-}
-
-.card__media img {
-  object-fit: cover;
   transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.card:hover .card__media img {
+.card:hover .card__media {
   transform: scale(1.035);
+}
+
+/* Scroll-driven parallax (see components/Parallax.tsx): the box is scaled up
+   and bled past its container's edges so the translate below never reveals
+   a gap, then clipped by .card__media's overflow: hidden. */
+.card__media .parallax {
+  position: absolute;
+  inset: -14% 0;
+}
+
+.card__media .parallax img {
+  object-fit: cover;
+  transform: scale(1.22) translateY(var(--parallax-y, 0px));
 }
 
 .card__title {
@@ -758,6 +772,7 @@ a {
   .is-visible .world-map__label { animation-duration: 0.01s; }
   .hero2__scroll { animation: none; }
   .logowall__row { transform: none !important; }
+  .card__media .parallax img { transform: none; }
 }
 
 /* -------------------------------------------------------------- responsive */

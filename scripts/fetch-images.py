@@ -1,11 +1,13 @@
 """Fetch exhibition images and event logos from the shared Google Drive folders.
 
 Runs as the first step of the build (see "prebuild" in package.json).
-Downloads every project subfolder of the public Drive folder into
-public/exhibitions/<project-slug>/, and the flat EVENTS logo folder into
-public/logos/, so the site can serve them. Images are never committed to
-git; each Vercel build re-fetches them, which is how new photos Mehrnaz
-drops into Drive reach the live site.
+Downloads the public Drive folder - laid out as
+<Year>/<Event>/<Client>/<Location>_<Partner>/*.ext - into
+public/exhibitions/<client-slug>/ (one project per client folder, images
+flattened), and the flat EVENTS logo folder into public/logos/, so the site
+can serve them. Images are never committed to git; each Vercel build
+re-fetches them, which is how new photos Mehrnaz drops into Drive reach the
+live site.
 
 Skips a download when its destination already has content, so local
 rebuilds stay fast. Set FORCE_FETCH=1 to re-download anyway.
@@ -58,6 +60,19 @@ def download_folder(url: str, tmp: Path) -> None:
     gdown.download_folder(url=url, output=str(tmp), quiet=False)
 
 
+def parse_location_partner(client_dir: Path) -> tuple[str | None, str | None]:
+    """The single expected subfolder of a client folder is named
+    "<Location>_<Partner>" (the partner's base city, not necessarily the show
+    venue - e.g. "Madrid_Standecor" for a Nantes show built by a Madrid-based
+    partner). Ambiguous (zero or several) subfolders yield unknown fields
+    rather than guessing."""
+    subdirs = [d for d in client_dir.iterdir() if d.is_dir()]
+    if len(subdirs) != 1:
+        return None, None
+    location, _, partner = subdirs[0].name.partition("_")
+    return location.strip() or None, partner.strip() or None
+
+
 def fetch_exhibitions() -> None:
     tmp = REPO_ROOT / ".drive-download"
     download_folder(DRIVE_FOLDER_URL, tmp)
@@ -66,35 +81,70 @@ def fetch_exhibitions() -> None:
         shutil.rmtree(DEST)
     DEST.mkdir(parents=True)
 
-    # Each Drive subfolder is one project; files at the root (booklet pages)
-    # are not part of any gallery and are left out of the site.
+    # Drive layout: <Year>/<Event>/<Client>/<Location>_<Partner>/*.ext. One
+    # project per client folder (images from any deeper nesting flattened
+    # into it); stray files directly under the root, a year folder, or an
+    # event folder (booklet pages, notes) are not part of any gallery and
+    # are left out of the site.
     projects = 0
-    names: dict[str, str] = {}
-    for entry in sorted(tmp.iterdir()):
-        if not entry.is_dir():
+    used_slugs: set[str] = set()
+    folders: dict[str, dict] = {}
+    for year_dir in sorted(tmp.iterdir()):
+        if not year_dir.is_dir():
             continue
-        slug = slugify(entry.name)
-        target = DEST / slug
-        target.mkdir()
-        images = 0
-        for file in sorted(entry.rglob("*")):
-            if file.is_file() and file.suffix.lower() in IMAGE_EXTENSIONS:
-                shutil.copy2(file, target / file.name)
-                images += 1
-        print(f"  {entry.name} -> {target.relative_to(REPO_ROOT)} ({images} images)")
-        names[slug] = entry.name
-        projects += 1
+        year = int(year_dir.name) if year_dir.name.isdigit() else None
+        for event_dir in sorted(year_dir.iterdir()):
+            if not event_dir.is_dir():
+                continue
+            event = event_dir.name
+            for client_dir in sorted(event_dir.iterdir()):
+                if not client_dir.is_dir():
+                    continue
+                client = client_dir.name
+                image_files = [
+                    f for f in sorted(client_dir.rglob("*"))
+                    if f.is_file() and f.suffix.lower() in IMAGE_EXTENSIONS
+                ]
+                if not image_files:
+                    continue
+
+                base_slug = slugify(client)
+                slug = base_slug
+                n = 2
+                while slug in used_slugs:
+                    slug = f"{base_slug}-{n}"
+                    n += 1
+                used_slugs.add(slug)
+
+                target = DEST / slug
+                target.mkdir()
+                for file in image_files:
+                    shutil.copy2(file, target / file.name)
+
+                location, partner = parse_location_partner(client_dir)
+                print(
+                    f"  {year_dir.name}/{event}/{client} -> "
+                    f"{target.relative_to(REPO_ROOT)} ({len(image_files)} images)"
+                )
+                folders[slug] = {
+                    "year": year,
+                    "event": event,
+                    "client": client,
+                    "location": location,
+                    "partner": partner,
+                }
+                projects += 1
 
     shutil.rmtree(tmp)
 
     if projects == 0:
         sys.exit("No project folders found in the Drive folder - aborting build.")
 
-    # Raw folder names, keyed by slug, so lib/content.ts can synthesize a
-    # project entry (via the "Client - Event - Location - Year - Partner"
-    # naming convention) for folders not yet curated in content/projects.ts.
-    names_file = REPO_ROOT / "content" / "drive-folders.json"
-    names_file.write_text(json.dumps(names, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    # Structured metadata per slug, so lib/content.ts can synthesize a
+    # project entry for client folders not yet curated in
+    # content/projects.ts. An entry added there always takes precedence.
+    folders_file = REPO_ROOT / "content" / "drive-folders.json"
+    folders_file.write_text(json.dumps(folders, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
     print(f"Fetched {projects} project folders.")
 

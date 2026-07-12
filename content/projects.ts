@@ -1,13 +1,13 @@
-// One entry per project subfolder in the shared Google Drive folder.
-// `slug` must match the slugified folder name (see scripts/fetch-images.py):
-// the gallery images for a project live in public/exhibitions/<slug>/.
-// Projects whose folder has no images yet (e.g. BATIMAT) are kept here but
-// only appear on the site once photos land in Drive.
+// One entry per client subfolder in the shared Google Drive folder (layout:
+// <Year>/<Event>/<Client>/<Location>_<Partner>/*.ext). `slug` must match the
+// slugified client folder name (see scripts/fetch-images.py): the gallery
+// images for a project live in public/exhibitions/<slug>/.
 //
-// A Drive folder with images but no entry here still appears on the site:
-// lib/content.ts synthesizes one from the raw folder name, parsed against
-// the "Year - Event - Client - Location - Partner" naming convention. An
-// entry added here always takes precedence over that synthesized one.
+// A Drive client folder with images but no entry here still appears on the
+// site: lib/content.ts synthesizes one from content/drive-folders.json
+// (year/event/client/location/partner parsed straight from the folder
+// hierarchy). An entry added here always takes precedence over that
+// synthesized one.
 
 export type Project = {
   slug: string;
@@ -27,7 +27,7 @@ export type Project = {
 
 export const projects: Project[] = [
   {
-    slug: "mwc",
+    slug: "italia",
     client: "Italia",
     event: "MWC Barcelona",
     location: "Barcelona, Spain",
@@ -36,16 +36,25 @@ export const projects: Project[] = [
     hero: "ITALIA_Site.jpg",
   },
   {
-    slug: "websummit",
-    client: "Talabat · PayLater",
+    slug: "talabat",
+    client: "Talabat",
     event: "Web Summit Qatar",
     location: "Doha, Qatar",
     year: 2026,
     partner: "Dar Agha",
-    hero: "Talabat_Site.jpg",
+    hero: "Talabat_Render.jpg",
   },
   {
-    slug: "farnborough-air-show",
+    slug: "paylater",
+    client: "PayLater",
+    event: "Web Summit Qatar",
+    location: "Doha, Qatar",
+    year: 2026,
+    partner: "Dar Agha",
+    hero: "PayLater_Site.jpg",
+  },
+  {
+    slug: "hondajet",
     client: "HondaJet",
     event: "Farnborough International Airshow",
     location: "Farnborough, United Kingdom",
@@ -54,7 +63,7 @@ export const projects: Project[] = [
     hero: "HONDAJET_Render.jpg",
   },
   {
-    slug: "fitur",
+    slug: "caf",
     client: "CAF",
     event: "FITUR",
     location: "Madrid, Spain",
@@ -63,16 +72,16 @@ export const projects: Project[] = [
     hero: "CAF_site.jpg",
   },
   {
-    slug: "sil",
+    slug: "port-de-barcelona",
     client: "Port de Barcelona",
     event: "SIL",
     location: "Barcelona, Spain",
     year: 2026,
     partner: "Standecor",
-    hero: "Port de Barcelona 2026_Render.png",
+    hero: "Port de Barcelona 2026_Render_key.png",
   },
   {
-    slug: "vitafood",
+    slug: "inalme",
     client: "Alta Natura · Inalme",
     event: "Vitafoods Europe",
     location: "Barcelona, Spain",
@@ -80,7 +89,7 @@ export const projects: Project[] = [
     partner: "Standecor",
   },
   {
-    slug: "cib",
+    slug: "garnica",
     client: "Garnica",
     event: "Carrefour International du Bois",
     location: "Nantes, France",
@@ -88,7 +97,7 @@ export const projects: Project[] = [
     partner: "Standecor",
   },
   {
-    slug: "infarma",
+    slug: "pixel-farma",
     client: "Pixel",
     event: "Infarma",
     location: "Barcelona, Spain",
@@ -97,8 +106,8 @@ export const projects: Project[] = [
     hero: "Pixel_Render.jpg",
   },
   {
-    slug: "batimat",
-    client: "BATIMAT",
+    slug: "saray",
+    client: "SARAY",
     event: "BATIMAT",
     location: "Paris, France",
     year: 2026,
