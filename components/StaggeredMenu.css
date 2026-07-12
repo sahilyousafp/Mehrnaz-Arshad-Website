@@ -93,14 +93,7 @@
 }
 
 .sm-toggle-textInner {
-  display: flex;
-  flex-direction: column;
-  line-height: 1;
-}
-
-.sm-toggle-line {
-  display: block;
-  height: 1em;
+  display: inline-block;
   line-height: 1;
 }
 

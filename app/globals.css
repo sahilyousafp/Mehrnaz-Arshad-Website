@@ -650,6 +650,11 @@ a {
   overflow: hidden;
 }
 
+.footer2__trail {
+  position: absolute;
+  inset: 0;
+}
+
 .footer2__bg {
   object-fit: cover;
   object-position: center;

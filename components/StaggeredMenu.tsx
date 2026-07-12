@@ -76,12 +76,11 @@ export default function StaggeredMenu({
   const iconRef = useRef<HTMLSpanElement | null>(null);
   const textInnerRef = useRef<HTMLSpanElement | null>(null);
   const textWrapRef = useRef<HTMLSpanElement | null>(null);
-  const [textLines, setTextLines] = useState(["Menu", "Close"]);
 
   const openTlRef = useRef<gsap.core.Timeline | null>(null);
   const closeTweenRef = useRef<gsap.core.Tween | null>(null);
   const spinTweenRef = useRef<gsap.core.Tween | null>(null);
-  const textCycleAnimRef = useRef<gsap.core.Tween | null>(null);
+  const textCycleAnimRef = useRef<gsap.core.Timeline | null>(null);
   const colorTweenRef = useRef<gsap.core.Tween | null>(null);
   const toggleBtnRef = useRef<HTMLButtonElement | null>(null);
   const busyRef = useRef(false);
@@ -313,32 +312,26 @@ export default function StaggeredMenu({
     }
   }, [changeMenuColorOnOpen, menuButtonColor, openMenuButtonColor]);
 
+  // Rolls the toggle label out, swaps its text directly on the DOM node
+  // (not via React state), then rolls the new label in. Mutating textContent
+  // imperatively - rather than cycling through a React-rendered line array -
+  // means the label always converges on whatever this call's `opening` says
+  // it should be, even if a previous call was interrupted mid-animation by a
+  // rapid click; the old approach could desync and get stuck on "Close".
   const animateText = useCallback((opening: boolean) => {
     const inner = textInnerRef.current;
     if (!inner) return;
     textCycleAnimRef.current?.kill();
 
-    const currentLabel = opening ? "Menu" : "Close";
-    const targetLabel = opening ? "Close" : "Menu";
-    const cycles = 3;
-    const seq = [currentLabel];
-    let last = currentLabel;
-    for (let i = 0; i < cycles; i++) {
-      last = last === "Menu" ? "Close" : "Menu";
-      seq.push(last);
-    }
-    if (last !== targetLabel) seq.push(targetLabel);
-    seq.push(targetLabel);
-    setTextLines(seq);
-
-    gsap.set(inner, { yPercent: 0 });
-    const lineCount = seq.length;
-    const finalShift = ((lineCount - 1) / lineCount) * 100;
-    textCycleAnimRef.current = gsap.to(inner, {
-      yPercent: -finalShift,
-      duration: 0.5 + lineCount * 0.07,
-      ease: "power4.out",
-    });
+    const label = opening ? "Close" : "Menu";
+    const tl = gsap.timeline();
+    tl.to(inner, { yPercent: -100, duration: 0.22, ease: "power3.in" })
+      .call(() => {
+        inner.textContent = label;
+        gsap.set(inner, { yPercent: 100 });
+      })
+      .to(inner, { yPercent: 0, duration: 0.3, ease: "power3.out" });
+    textCycleAnimRef.current = tl;
   }, []);
 
   const toggleMenu = useCallback(() => {
@@ -426,11 +419,7 @@ export default function StaggeredMenu({
         >
           <span ref={textWrapRef} className="sm-toggle-textWrap" aria-hidden="true">
             <span ref={textInnerRef} className="sm-toggle-textInner">
-              {textLines.map((l, i) => (
-                <span className="sm-toggle-line" key={i}>
-                  {l}
-                </span>
-              ))}
+              Menu
             </span>
           </span>
           <span ref={iconRef} className="sm-icon" aria-hidden="true">

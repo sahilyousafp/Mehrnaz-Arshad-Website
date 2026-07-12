@@ -2,11 +2,19 @@ import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
 import { Archivo, Bebas_Neue } from "next/font/google";
 import Image from "next/image";
+import ContactImageTrail from "@/components/ContactImageTrail";
 import FooterLinks from "@/components/FooterLinks";
 import SiteHeader from "@/components/SiteHeader";
 import Wordmark from "@/components/Wordmark";
 import { site } from "@/content/site";
+import { heroImage, imagePath, projectAlt, visibleProjects } from "@/lib/content";
 import "./globals.css";
+
+const trailItems = visibleProjects.map((project) => ({
+  src: imagePath(project.slug, heroImage(project).file),
+  href: `/projects/${project.slug}`,
+  alt: projectAlt(project),
+}));
 
 const bebas = Bebas_Neue({
   subsets: ["latin"],
@@ -40,6 +48,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             className="footer2__bg"
             aria-hidden
           />
+          <ContactImageTrail items={trailItems} />
           <div className="footer2__top">
             <FooterLinks email={site.email} linkedin={site.linkedin} />
             <p className="footer2__legal">
