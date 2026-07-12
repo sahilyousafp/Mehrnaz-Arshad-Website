@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import ExpertiseProcess from "@/components/ExpertiseProcess";
 import LogoWall from "@/components/LogoWall";
 import Parallax from "@/components/Parallax";
 import Reveal from "@/components/Reveal";
@@ -18,8 +19,6 @@ import {
   visibleEventLogos,
   visibleProjects,
 } from "@/lib/content";
-
-const EXPERTISE = ["Design", "Visualise", "Build", "Install"];
 
 function ALink({ href, children }: { href: string; children: React.ReactNode }) {
   const inner = (
@@ -44,8 +43,6 @@ function ALink({ href, children }: { href: string; children: React.ReactNode }) 
 export default function Home() {
   const featured = visibleProjects[0];
   const featuredPanel = heroImage(featured);
-  const heroFile =
-    gallery(featured.slug).find((i) => i.file !== featuredPanel.file) ?? featuredPanel;
   const introProject = visibleProjects[2] ?? featured;
   const logos = visibleEventLogos.map((logo) => ({
     src: logoPath(logo.file),
@@ -65,8 +62,8 @@ export default function Home() {
     <main>
       <section className="hero2">
         <Image
-          src={imagePath(featured.slug, heroFile.file)}
-          alt={projectAlt(featured)}
+          src="/pinned/hero-contact.jpg"
+          alt=""
           fill
           priority
           sizes="100vw"
@@ -139,14 +136,6 @@ export default function Home() {
       </section>
 
       <section id="expertise" className="expertise" data-header-invert>
-        <Image
-          src={imagePath(featured.slug, featuredPanel.file)}
-          alt=""
-          fill
-          sizes="100vw"
-          className="expertise__bg"
-          aria-hidden
-        />
         <Reveal>
           <p className="t-statement expertise__statement">
             One designer, four stages: every stand follows the same path from
@@ -157,13 +146,7 @@ export default function Home() {
           Each stage can be commissioned on its own or run as one continuous
           chain — depending on the client, the venue and the deadline.
         </p>
-        <ul className="expertise__list">
-          {EXPERTISE.map((word) => (
-            <li key={word} className="expertise__row">
-              {word}
-            </li>
-          ))}
-        </ul>
+        <ExpertiseProcess ambientImage={imagePath(featured.slug, featuredPanel.file)} />
         <div className="expertise__cta">
           <ALink href="#projects">See the projects</ALink>
         </div>

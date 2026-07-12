@@ -4,7 +4,6 @@ import Image from "next/image";
 import SiteHeader from "@/components/SiteHeader";
 import Wordmark from "@/components/Wordmark";
 import { site } from "@/content/site";
-import { heroImage, imagePath, visibleProjects } from "@/lib/content";
 import "./globals.css";
 
 const bebas = Bebas_Neue({
@@ -25,16 +24,20 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const footerProject = visibleProjects[visibleProjects.length - 1];
-  const footerBg = imagePath(footerProject.slug, heroImage(footerProject).file);
-
   return (
     <html lang="en" className={`${bebas.variable} ${archivo.variable}`}>
       <body>
         <SiteHeader />
         {children}
         <footer className="footer2" id="contact" data-header-invert>
-          <Image src={footerBg} alt="" fill sizes="100vw" className="footer2__bg" aria-hidden />
+          <Image
+            src="/pinned/hero-contact.jpg"
+            alt=""
+            fill
+            sizes="100vw"
+            className="footer2__bg"
+            aria-hidden
+          />
           <div className="footer2__top">
             <div className="footer2__links">
               <a className="alink" href={`mailto:${site.email}`}>

@@ -11,6 +11,7 @@
 # synced from Google Drive at build time - never committed
 /public/exhibitions
 /public/logos
+/public/pinned
 /content/manifest.json
 /content/logos.json
 /content/drive-folders.json

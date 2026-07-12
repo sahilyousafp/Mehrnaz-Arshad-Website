@@ -329,6 +329,18 @@ a {
   filter: grayscale(1) brightness(0.38);
 }
 
+.expertise__stage-bg {
+  object-fit: cover;
+  object-position: center;
+  filter: grayscale(1) brightness(0.55);
+  opacity: 0;
+  transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.expertise__stage-bg.is-active {
+  opacity: 1;
+}
+
 .expertise__statement {
   position: relative;
   max-width: 46rem;
@@ -339,6 +351,10 @@ a {
   max-width: 46ch;
   margin: 1.4rem 0 clamp(3rem, 8vh, 5.5rem);
   color: rgba(255, 255, 255, 0.85);
+}
+
+.expertise__interactive {
+  position: relative;
 }
 
 .expertise__list {
@@ -352,10 +368,41 @@ a {
   font-size: clamp(3.2rem, 9.4vw, 9rem);
   line-height: 1.04;
   padding: 0.04em 0;
+  cursor: default;
+  transition: opacity 0.35s cubic-bezier(0.22, 1, 0.36, 1), transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .expertise__row:last-child {
   border-bottom: 1px solid var(--line-light);
+}
+
+.expertise__row.is-dim {
+  opacity: 0.4;
+}
+
+.expertise__row.is-active {
+  transform: translateY(-0.03em);
+}
+
+.expertise__caption {
+  position: absolute;
+  right: 0;
+  bottom: 0.6em;
+  list-style: none;
+  text-align: right;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: -0.01em;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.85);
+  opacity: 0;
+  transition: opacity 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+.expertise__caption.is-visible {
+  opacity: 1;
 }
 
 .expertise__cta {
@@ -773,6 +820,10 @@ a {
   .hero2__scroll { animation: none; }
   .logowall__row { transform: none !important; }
   .card__media .parallax img { transform: none; }
+  .expertise__stage-bg,
+  .expertise__row,
+  .expertise__caption { transition: none; }
+  .expertise__row.is-active { transform: none; }
 }
 
 /* -------------------------------------------------------------- responsive */

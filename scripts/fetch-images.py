@@ -5,9 +5,11 @@ Downloads the public Drive folder - laid out as
 <Year>/<Event>/<Client>/<Location>_<Partner>/*.ext - into
 public/exhibitions/<client-slug>/ (one project per client folder, images
 flattened), and the flat EVENTS logo folder into public/logos/, so the site
-can serve them. Images are never committed to git; each Vercel build
-re-fetches them, which is how new photos Mehrnaz drops into Drive reach the
-live site.
+can serve them. Also downloads one pinned single-file image (Mehrnaz's fixed
+choice for the hero and footer/contact backgrounds) into
+public/pinned/hero-contact.jpg. Images are never committed to git; each
+Vercel build re-fetches them, which is how new photos Mehrnaz drops into
+Drive reach the live site.
 
 Skips a download when its destination already has content, so local
 rebuilds stay fast. Set FORCE_FETCH=1 to re-download anyway.
@@ -26,9 +28,13 @@ DRIVE_FOLDER_URL = (
 LOGOS_FOLDER_URL = (
     "https://drive.google.com/drive/folders/1vWglt_m4UwV78d61co0-xOW-G91v8H92"
 )
+# Fixed image Mehrnaz wants used for both the hero and the footer/contact
+# background, regardless of which projects are currently synced.
+PINNED_IMAGE_FILE_ID = "1_w_tHs4aL3_8y5il1m9IBRCk7o0GWv--"
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DEST = REPO_ROOT / "public" / "exhibitions"
 LOGOS_DEST = REPO_ROOT / "public" / "logos"
+PINNED_DEST = REPO_ROOT / "public" / "pinned" / "hero-contact.jpg"
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".avif"}
 
 
@@ -44,6 +50,15 @@ def should_fetch(dest: Path) -> bool:
         return True
     if dest.is_dir() and any(dest.iterdir()):
         print(f"{dest} already populated - skipping download (set FORCE_FETCH=1 to refresh)")
+        return False
+    return True
+
+
+def should_fetch_file(dest: Path) -> bool:
+    if os.environ.get("VERCEL") or os.environ.get("FORCE_FETCH"):
+        return True
+    if dest.is_file() and dest.stat().st_size > 0:
+        print(f"{dest} already present - skipping download (set FORCE_FETCH=1 to refresh)")
         return False
     return True
 
@@ -171,11 +186,24 @@ def fetch_logos() -> None:
     print(f"Fetched {logos} event logos into {LOGOS_DEST.relative_to(REPO_ROOT)}.")
 
 
+def fetch_pinned_image() -> None:
+    try:
+        import gdown
+    except ImportError:
+        sys.exit("gdown is not installed. Run: pip install gdown")
+
+    PINNED_DEST.parent.mkdir(parents=True, exist_ok=True)
+    print(f"Downloading pinned image into {PINNED_DEST} ...")
+    gdown.download(id=PINNED_IMAGE_FILE_ID, output=str(PINNED_DEST), quiet=False)
+
+
 def main() -> None:
     if should_fetch(DEST):
         fetch_exhibitions()
     if should_fetch(LOGOS_DEST):
         fetch_logos()
+    if should_fetch_file(PINNED_DEST):
+        fetch_pinned_image()
 
 
 if __name__ == "__main__":
