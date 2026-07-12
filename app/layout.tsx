@@ -1,6 +1,8 @@
+import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
 import { Archivo, Bebas_Neue } from "next/font/google";
 import Image from "next/image";
+import FooterLinks from "@/components/FooterLinks";
 import SiteHeader from "@/components/SiteHeader";
 import Wordmark from "@/components/Wordmark";
 import { site } from "@/content/site";
@@ -39,26 +41,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             aria-hidden
           />
           <div className="footer2__top">
-            <div className="footer2__links">
-              <a className="alink" href={`mailto:${site.email}`}>
-                <span className="arw" aria-hidden>
-                  ↘
-                </span>
-                Email
-              </a>
-              <a className="alink" href={site.linkedin} target="_blank" rel="noreferrer">
-                <span className="arw" aria-hidden>
-                  ↘
-                </span>
-                LinkedIn
-              </a>
-            </div>
+            <FooterLinks email={site.email} linkedin={site.linkedin} />
             <p className="footer2__legal">
               © {new Date().getFullYear()}, {site.name}. {site.role} — {site.base}
             </p>
           </div>
           <Wordmark text="MEHRNAZ ARSHAD" className="footer2__mark" />
         </footer>
+        <Analytics />
       </body>
     </html>
   );

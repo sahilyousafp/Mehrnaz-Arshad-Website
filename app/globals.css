@@ -65,7 +65,7 @@ a {
   text-transform: uppercase;
   font-weight: 700;
   letter-spacing: -0.01em;
-  font-size: 0.8125rem;
+  font-size: 0.8938rem;
   line-height: 1.25;
 }
 
@@ -90,7 +90,7 @@ a {
   text-transform: uppercase;
   font-weight: 700;
   letter-spacing: -0.01em;
-  font-size: 0.8125rem;
+  font-size: 0.8938rem;
   line-height: 1;
 }
 
@@ -166,7 +166,7 @@ a {
   text-transform: uppercase;
   font-weight: 700;
   letter-spacing: -0.01em;
-  font-size: 0.8125rem;
+  font-size: 0.8938rem;
   position: relative;
   padding-bottom: 0.15em;
 }
@@ -258,7 +258,7 @@ a {
 .hero2__scroll {
   text-transform: uppercase;
   font-weight: 700;
-  font-size: 0.8125rem;
+  font-size: 0.8938rem;
   letter-spacing: -0.01em;
   animation: bob 2.6s ease-in-out infinite;
 }
@@ -392,7 +392,7 @@ a {
   text-align: right;
   text-transform: uppercase;
   font-weight: 700;
-  font-size: 0.75rem;
+  font-size: 0.8625rem;
   letter-spacing: -0.01em;
   line-height: 1.6;
   color: rgba(255, 255, 255, 0.85);
@@ -429,6 +429,8 @@ a {
 
 .card {
   display: block;
+  width: 80%;
+  margin: 0 auto;
 }
 
 .projects2__grid .card:nth-child(even) {
@@ -480,7 +482,7 @@ a {
   text-transform: uppercase;
   font-weight: 700;
   letter-spacing: -0.02em;
-  font-size: clamp(1.05rem, 1.7vw, 1.45rem);
+  font-size: clamp(1.15rem, 1.9vw, 1.6rem);
   line-height: 1.12;
   max-width: 36ch;
 }
@@ -574,7 +576,6 @@ a {
 
 .partner-list li {
   display: flex;
-  justify-content: space-between;
   align-items: baseline;
   gap: 1rem;
   padding: 0.5rem 0;
@@ -582,12 +583,7 @@ a {
   text-transform: uppercase;
   font-weight: 700;
   letter-spacing: -0.01em;
-  font-size: 0.8125rem;
-}
-
-.partner-list li span:last-child {
-  color: var(--ink-soft);
-  font-weight: 500;
+  font-size: 0.8938rem;
 }
 
 .partners__email {
@@ -597,6 +593,7 @@ a {
 /* ------------------------------------------------------------------- map */
 
 .world-map {
+  --map-progress: 0;
   width: 100%;
   height: auto;
   display: block;
@@ -606,83 +603,48 @@ a {
   fill: rgba(10, 10, 10, 0.08);
 }
 
+/* Each element's fill-in is staggered by --i (its index among partners) and
+   scrubs directly off --map-progress (0-1, set from scroll position in
+   WorldMap.tsx), so it draws in and out as the section scrolls through view
+   instead of playing once. */
 .world-map__arc {
+  --local: clamp(0, calc((var(--map-progress) - var(--i) * 0.06) / 0.4), 1);
   fill: none;
   stroke: var(--black);
   stroke-width: 1;
   opacity: 0.8;
   stroke-dasharray: var(--arc-len, 600);
-  stroke-dashoffset: var(--arc-len, 600);
+  stroke-dashoffset: calc(var(--arc-len, 600) * (1 - var(--local)));
 }
 
 .world-map__dot {
+  --local: clamp(0, calc((var(--map-progress) - var(--i) * 0.06) / 0.3), 1);
   fill: var(--black);
-  opacity: 0;
+  opacity: var(--local);
   transform-origin: center;
   transform-box: fill-box;
-  transform: scale(0);
-}
-
-.world-map__pulse {
-  fill: none;
-  stroke: var(--black);
-  opacity: 0;
+  transform: scale(var(--local));
 }
 
 .world-map__label {
+  --local: clamp(0, calc((var(--map-progress) - var(--i) * 0.06 - 0.08) / 0.3), 1);
   fill: rgba(10, 10, 10, 0.8);
   font-family: var(--font-body), sans-serif;
   font-size: 8px;
   font-weight: 700;
   letter-spacing: 0.02em;
   text-transform: uppercase;
-}
-
-.world-map__label {
-  opacity: 0;
-}
-
-.is-visible .world-map__arc {
-  animation: draw-arc 1.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-  animation-delay: calc(var(--i) * 0.12s + 0.3s);
-}
-
-.is-visible .world-map__dot {
-  animation: pop-dot 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-  animation-delay: calc(var(--i) * 0.12s + 0.25s);
-}
-
-.is-visible .world-map__label {
-  animation: fade-label 0.7s ease forwards;
-  animation-delay: calc(var(--i) * 0.12s + 0.75s);
-}
-
-.is-visible .world-map__pulse--base {
-  animation: pulse 3s ease-out 1.4s infinite;
-}
-
-@keyframes draw-arc {
-  to { stroke-dashoffset: 0; }
-}
-
-@keyframes pop-dot {
-  to { opacity: 1; transform: scale(1); }
-}
-
-@keyframes fade-label {
-  to { opacity: 1; }
-}
-
-@keyframes pulse {
-  0% { opacity: 0.7; transform: scale(0.4); }
-  70% { opacity: 0; transform: scale(2.6); }
-  100% { opacity: 0; transform: scale(2.6); }
+  opacity: var(--local);
 }
 
 /* ----------------------------------------------------------------- footer */
 
 .footer2 {
   position: relative;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   background: #000;
   color: var(--white);
   overflow: hidden;
@@ -718,7 +680,7 @@ a {
   text-transform: uppercase;
   font-weight: 700;
   letter-spacing: -0.01em;
-  font-size: 0.75rem;
+  font-size: 0.825rem;
   color: rgba(255, 255, 255, 0.85);
 }
 
@@ -830,9 +792,9 @@ a {
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .reveal { transition: none; opacity: 1; transform: none; }
-  .is-visible .world-map__arc,
-  .is-visible .world-map__dot,
-  .is-visible .world-map__label { animation-duration: 0.01s; }
+  .world-map__arc,
+  .world-map__dot,
+  .world-map__label { --local: 1 !important; }
   .hero2__scroll { animation: none; }
   .logowall__row { transform: none !important; }
   .card__media .parallax img { transform: none; }

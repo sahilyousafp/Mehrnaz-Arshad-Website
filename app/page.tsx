@@ -1,8 +1,9 @@
 import Image from "next/image";
-import Link from "next/link";
+import ALink from "@/components/ALink";
 import ExpertiseProcess from "@/components/ExpertiseProcess";
 import LogoWall from "@/components/LogoWall";
 import Parallax from "@/components/Parallax";
+import ProjectCardLink from "@/components/ProjectCardLink";
 import Reveal from "@/components/Reveal";
 import Ribbons from "@/components/Ribbons";
 import { NavLinks } from "@/components/SiteHeader";
@@ -20,30 +21,11 @@ import {
   visibleProjects,
 } from "@/lib/content";
 
-function ALink({ href, children }: { href: string; children: React.ReactNode }) {
-  const inner = (
-    <>
-      {children}{" "}
-      <span className="arw" aria-hidden>
-        ↘
-      </span>
-    </>
-  );
-  return href.startsWith("/") || href.startsWith("#") ? (
-    <Link className="alink" href={href}>
-      {inner}
-    </Link>
-  ) : (
-    <a className="alink" href={href}>
-      {inner}
-    </a>
-  );
-}
-
 export default function Home() {
   const featured = visibleProjects[0];
   const featuredPanel = heroImage(featured);
   const introProject = visibleProjects[2] ?? featured;
+  const introImage = gallery(introProject.slug)[0];
   const logos = visibleEventLogos.map((logo) => ({
     src: logoPath(logo.file),
     name: logo.name,
@@ -62,7 +44,7 @@ export default function Home() {
     <main>
       <section className="hero2">
         <Image
-          src="/pinned/hero-contact.jpg"
+          src={imagePath(featured.slug, featuredPanel.file)}
           alt=""
           fill
           priority
@@ -91,7 +73,13 @@ export default function Home() {
           </span>
           <div className="hero2__feature">
             <p className="t-label">{projectTitle(featured)}</p>
-            <ALink href={`/projects/${featured.slug}`}>View the project</ALink>
+            <ALink
+              href={`/projects/${featured.slug}`}
+              trackEvent={`project_click_${featured.slug}`}
+              trackProps={{ client: featured.client, source: "hero" }}
+            >
+              View the project
+            </ALink>
           </div>
         </div>
       </section>
@@ -120,18 +108,20 @@ export default function Home() {
               stand the client approved in the render.
             </p>
           </div>
-          <div className="intro__media">
+          <figure className="intro__media">
             <Image
-              src={imagePath(introProject.slug, heroImage(introProject).file)}
+              src={imagePath(introProject.slug, introImage.file)}
               alt={projectAlt(introProject)}
-              width={gallery(introProject.slug)[0].width}
-              height={gallery(introProject.slug)[0].height}
+              width={introImage.width}
+              height={introImage.height}
               sizes="(max-width: 860px) 100vw, 40vw"
             />
-          </div>
+          </figure>
         </div>
         <div className="intro__more">
-          <ALink href="#contact">Get in touch</ALink>
+          <ALink href="#contact" trackEvent="contact_click" trackProps={{ source: "intro-cta" }}>
+            Get in touch
+          </ALink>
         </div>
       </section>
 
@@ -156,14 +146,15 @@ export default function Home() {
         <p className="t-label">Selected projects</p>
         <div className="projects2__grid">
           {visibleProjects.map((project) => (
-            <Link key={project.slug} href={`/projects/${project.slug}`} className="card">
+            <ProjectCardLink key={project.slug} slug={project.slug} client={project.client} className="card">
               <div className="card__media">
                 <Parallax>
                   <Image
                     src={imagePath(project.slug, heroImage(project).file)}
                     alt={projectAlt(project)}
                     fill
-                    sizes="(max-width: 860px) 100vw, 50vw"
+                    quality={90}
+                    sizes="(max-width: 860px) 120vw, 65vw"
                   />
                 </Parallax>
               </div>
@@ -176,7 +167,7 @@ export default function Home() {
                   ↘
                 </span>
               </span>
-            </Link>
+            </ProjectCardLink>
           ))}
         </div>
       </section>
@@ -202,12 +193,13 @@ export default function Home() {
             {partnerNetwork.map((p) => (
               <li key={p.country}>
                 <span>{p.country}</span>
-                <span>{p.partner}</span>
               </li>
             ))}
           </ul>
           <div className="partners__email">
-            <ALink href={`mailto:${site.email}`}>{site.email}</ALink>
+            <ALink href={`mailto:${site.email}`} trackEvent="email_click" trackProps={{ source: "partners" }}>
+              {site.email}
+            </ALink>
           </div>
         </div>
         <Reveal>

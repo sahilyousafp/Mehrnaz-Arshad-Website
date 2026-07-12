@@ -1,0 +1,320 @@
+/* Ported from React Bits' StaggeredMenu, restyled to this site's black/white
+   design system (see app/globals.css): Archivo type, sharp uppercase labels,
+   monochrome panel instead of the original purple/violet defaults. */
+
+.staggered-menu-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  z-index: 40;
+  pointer-events: none;
+}
+
+.staggered-menu-wrapper.fixed-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 40;
+  overflow: hidden;
+}
+
+.staggered-menu-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.1rem var(--gutter);
+  background: transparent;
+  pointer-events: none;
+  z-index: 20;
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.staggered-menu-header.sm-header-hidden {
+  opacity: 0;
+  transform: translateY(-0.5rem);
+}
+
+.staggered-menu-header.sm-header-hidden > * {
+  pointer-events: none;
+}
+
+.staggered-menu-header > * {
+  pointer-events: auto;
+}
+
+.sm-logo {
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.9rem;
+  line-height: 0.8;
+  color: currentColor;
+  user-select: none;
+  transition: color 0.3s ease;
+}
+
+.sm-toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #fff;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  font-size: 0.9344rem;
+  line-height: 1;
+  overflow: visible;
+}
+
+.sm-toggle:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+.sm-toggle-textWrap {
+  position: relative;
+  display: inline-block;
+  height: 1em;
+  overflow: hidden;
+  white-space: nowrap;
+  width: var(--sm-toggle-width, auto);
+  min-width: 2.6em;
+}
+
+.sm-toggle-textInner {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+
+.sm-toggle-line {
+  display: block;
+  height: 1em;
+  line-height: 1;
+}
+
+.sm-icon {
+  position: relative;
+  width: 13px;
+  height: 13px;
+  flex: 0 0 13px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  will-change: transform;
+}
+
+.sm-icon-line {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 100%;
+  height: 1.5px;
+  background: currentColor;
+  transform: translate(-50%, -50%);
+  will-change: transform;
+}
+
+.staggered-menu-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: clamp(280px, 34vw, 440px);
+  height: 100%;
+  background: var(--white);
+  color: var(--black);
+  display: flex;
+  flex-direction: column;
+  padding: 6.5rem var(--gutter) 2.5rem;
+  overflow-y: auto;
+  z-index: 10;
+  pointer-events: auto;
+  opacity: 0;
+}
+
+[data-position="left"] .staggered-menu-panel {
+  right: auto;
+  left: 0;
+}
+
+.sm-prelayers {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: clamp(280px, 34vw, 440px);
+  pointer-events: none;
+  z-index: 5;
+  opacity: 0;
+}
+
+[data-position="left"] .sm-prelayers {
+  right: auto;
+  left: 0;
+}
+
+.sm-prelayer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 100%;
+  transform: translateX(0);
+  opacity: 0;
+}
+
+.sm-panel-inner {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.sm-panel-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.sm-panel-itemWrap {
+  position: relative;
+  overflow: hidden;
+  line-height: 1;
+  border-top: 1px solid var(--line-dark);
+}
+
+.sm-panel-itemWrap:last-child {
+  border-bottom: 1px solid var(--line-dark);
+}
+
+.sm-panel-item {
+  position: relative;
+  color: var(--black);
+  font-family: var(--font-display), sans-serif;
+  font-weight: 400;
+  font-size: clamp(1.8rem, 4.4vw, 2.6rem);
+  cursor: pointer;
+  line-height: 1.6;
+  text-transform: uppercase;
+  transition: color 0.25s;
+  display: inline-block;
+  text-decoration: none;
+  padding-right: 1.4em;
+}
+
+.sm-panel-itemLabel {
+  display: inline-block;
+  will-change: transform;
+  transform-origin: 50% 100%;
+}
+
+.sm-panel-item:hover {
+  color: var(--sm-accent, #8a8a8a);
+}
+
+.sm-panel-list[data-numbering] {
+  counter-reset: smItem;
+}
+
+.sm-panel-list[data-numbering] .sm-panel-item::after {
+  counter-increment: smItem;
+  content: counter(smItem, decimal-leading-zero);
+  position: absolute;
+  top: 0.3em;
+  right: 0;
+  font-family: var(--font-body), sans-serif;
+  font-size: 0.825rem;
+  font-weight: 700;
+  color: var(--sm-accent, #8a8a8a);
+  letter-spacing: 0;
+  pointer-events: none;
+  user-select: none;
+  opacity: var(--sm-num-opacity, 0);
+}
+
+.sm-socials {
+  margin-top: auto;
+  padding-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.sm-socials-title {
+  margin: 0;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  font-size: 0.8938rem;
+  color: var(--ink-soft);
+}
+
+.sm-socials-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.sm-socials-link {
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  font-size: 0.8938rem;
+  color: var(--black);
+  text-decoration: none;
+  position: relative;
+  padding-bottom: 0.15em;
+  display: inline-block;
+  transition: color 0.3s ease, opacity 0.3s ease;
+}
+
+.sm-socials-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sm-socials-link:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.sm-socials-link:focus-visible {
+  outline: 2px solid var(--sm-accent, #8a8a8a);
+  outline-offset: 3px;
+}
+
+@media (max-width: 640px) {
+  .staggered-menu-panel,
+  .sm-prelayers {
+    width: 100%;
+    left: 0;
+    right: 0;
+  }
+}
