@@ -19,6 +19,7 @@ npm run dev            # http://localhost:3000
 ## How content works
 
 - **Images** live in the shared Google Drive folder, one subfolder per project (`FITUR/2026_Standecor/...`). The build downloads them; nothing is committed.
+- **The card/hero image** for a project is whichever image has `_key` in its filename (e.g. `ITALIA_key.jpg`) - no code change needed. A `hero` filename set in `content/projects.ts` overrides it; if neither is present, the first image is used.
 - **Project text** (client, event, location, partner) normally lives in [`content/projects.ts`](content/projects.ts) - `slug` must match the slugified Drive folder name. Projects whose Drive folder has no images yet stay hidden automatically.
 - **New Drive folders with no entry in `content/projects.ts` still appear on the site automatically.** The build parses the raw folder name against the convention `Year - Event - Client - Location - Partner` (e.g. `2026 - FITUR - CAF - Madrid, Spain - Standecor`) and fills in those fields. A folder name that doesn't match the convention still appears, just with the folder name as its only title until it's either renamed to match the convention or given a proper entry in `content/projects.ts` (which always takes priority).
 - **Event logos** for the home-page logo wall live in the shared Drive `EVENTS` folder and are synced into `public/logos/` the same way. [`content/events.ts`](content/events.ts) maps each filename to a display name (and flags light-on-dark logos for inversion); logos not yet in Drive are skipped automatically.

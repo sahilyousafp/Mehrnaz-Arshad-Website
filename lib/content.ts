@@ -81,9 +81,16 @@ export function projectAlt(p: Project): string {
   return p.event ? `${p.client} stand at ${p.event}` : `${p.client} stand`;
 }
 
+/** True for filenames marked as the card/hero image, e.g. "ITALIA_key.jpg". */
+function isKeyImage(file: string): boolean {
+  const base = file.replace(/\.[^.]+$/, "");
+  return /(^|_)key(_|$)/i.test(base);
+}
+
 export function heroImage(project: Project): GalleryImage {
   const images = gallery(project.slug);
-  return images.find((i) => i.file === project.hero) ?? images[0];
+  const explicit = project.hero ? images.find((i) => i.file === project.hero) : undefined;
+  return explicit ?? images.find((i) => isKeyImage(i.file)) ?? images[0];
 }
 
 export function imagePath(slug: string, file: string): string {

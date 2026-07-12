@@ -20,7 +20,8 @@ export type Project = {
   partner?: string;
   /** e.g. "120 m2" - fill in when known */
   boothSize?: string;
-  /** Preferred hero image filename; falls back to the first image */
+  /** Preferred hero image filename; overrides an image named "..._key.ext"
+   * in Drive, which in turn overrides falling back to the first image. */
   hero?: string;
 };
 
