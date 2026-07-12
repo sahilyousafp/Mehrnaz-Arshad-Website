@@ -3,16 +3,21 @@
 // the gallery images for a project live in public/exhibitions/<slug>/.
 // Projects whose folder has no images yet (e.g. BATIMAT) are kept here but
 // only appear on the site once photos land in Drive.
+//
+// A Drive folder with images but no entry here still appears on the site:
+// lib/content.ts synthesizes one from the raw folder name, parsed against
+// the "Year - Event - Client - Location - Partner" naming convention. An
+// entry added here always takes precedence over that synthesized one.
 
 export type Project = {
   slug: string;
   /** Display title - the client / stand shown */
   client: string;
-  event: string;
-  location: string;
-  year: number;
+  event?: string;
+  location?: string;
+  year?: number;
   /** Construction partner who built the stand */
-  partner: string;
+  partner?: string;
   /** e.g. "120 m2" - fill in when known */
   boothSize?: string;
   /** Preferred hero image filename; falls back to the first image */

@@ -5,9 +5,9 @@ export const site = {
   name: "Mehrnaz Arshad",
   role: "Exhibition Stand Designer",
   // TODO: real email address
-  email: "hello@mehrnazarshad.com",
+  email: "mehranzarshad99@gmail.com",
   // TODO: real LinkedIn URL (or remove)
-  linkedin: "https://www.linkedin.com/in/mehrnaz-arshad",
+  linkedin: "https://www.linkedin.com/in/mehrnaz-arshad-87990520a/",
   base: "Barcelona, Spain",
 };
 
@@ -35,6 +35,3 @@ export const partnerNetwork: PartnerPoint[] = [
   { country: "UAE", city: "Dubai", lat: 25.2, lon: 55.27 },
   { country: "Qatar", city: "Doha", lat: 25.29, lon: 51.53, partner: "Dar Agha" },
 ];
-
-// Partners whose country pairing is not yet confirmed.
-export const otherPartners = ["CM-Creative"];

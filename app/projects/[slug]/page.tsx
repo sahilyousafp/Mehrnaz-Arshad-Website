@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Reveal from "@/components/Reveal";
-import { gallery, imagePath, visibleProjects } from "@/lib/content";
+import { gallery, imagePath, projectAlt, visibleProjects } from "@/lib/content";
 
 export const dynamicParams = false;
 
@@ -19,9 +19,19 @@ export async function generateMetadata({
   const { slug } = await params;
   const project = visibleProjects.find((p) => p.slug === slug);
   if (!project) return {};
+  const title = [project.client, project.event].filter(Boolean).join(" · ");
+  const bits = [
+    `${project.client} exhibition stand`,
+    project.event && `at ${project.event}`,
+    project.location && `in ${project.location}`,
+    project.year && `(${project.year})`,
+  ].filter(Boolean);
+  const description = project.partner
+    ? `${bits.join(" ")}. Designed by Mehrnaz Arshad, built with ${project.partner}.`
+    : `${bits.join(" ")}. Designed by Mehrnaz Arshad.`;
   return {
-    title: `${project.client} · ${project.event} - Mehrnaz Arshad`,
-    description: `${project.client} exhibition stand at ${project.event}, ${project.location} (${project.year}). Designed by Mehrnaz Arshad, built with ${project.partner}.`,
+    title: `${title} - Mehrnaz Arshad`,
+    description,
   };
 }
 
@@ -43,26 +53,34 @@ export default async function ProjectPage({
     <main>
       <section className="phero">
         <p className="t-label t-muted">
-          {String(index + 1).padStart(2, "0")} — {project.event}
+          {String(index + 1).padStart(2, "0")} — {project.event ?? project.client}
         </p>
         <h1 className="phero__title">{project.client}</h1>
         <div className="phero__meta">
-          <div>
-            <span className="t-label">Event</span>
-            <strong>{project.event}</strong>
-          </div>
-          <div>
-            <span className="t-label">Location</span>
-            <strong>{project.location}</strong>
-          </div>
-          <div>
-            <span className="t-label">Year</span>
-            <strong>{project.year}</strong>
-          </div>
-          <div>
-            <span className="t-label">Built with</span>
-            <strong>{project.partner}</strong>
-          </div>
+          {project.event && (
+            <div>
+              <span className="t-label">Event</span>
+              <strong>{project.event}</strong>
+            </div>
+          )}
+          {project.location && (
+            <div>
+              <span className="t-label">Location</span>
+              <strong>{project.location}</strong>
+            </div>
+          )}
+          {project.year && (
+            <div>
+              <span className="t-label">Year</span>
+              <strong>{project.year}</strong>
+            </div>
+          )}
+          {project.partner && (
+            <div>
+              <span className="t-label">Built with</span>
+              <strong>{project.partner}</strong>
+            </div>
+          )}
           {project.boothSize && (
             <div>
               <span className="t-label">Stand size</span>
@@ -77,7 +95,7 @@ export default async function ProjectPage({
           <Reveal as="figure" key={image.file}>
             <Image
               src={imagePath(project.slug, image.file)}
-              alt={`${project.client} at ${project.event} - ${image.file.replace(/\.[^.]+$/, "").replace(/_/g, " ")}`}
+              alt={`${projectAlt(project)} - ${image.file.replace(/\.[^.]+$/, "").replace(/_/g, " ")}`}
               width={image.width}
               height={image.height}
               sizes="100vw"

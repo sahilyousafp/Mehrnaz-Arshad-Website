@@ -12,7 +12,6 @@
   --ink-soft: rgba(10, 10, 10, 0.62);
   --line-dark: rgba(10, 10, 10, 0.18);
   --line-light: rgba(255, 255, 255, 0.35);
-  --grey-word: #d9d9d9;
   --font-display: var(--bebas);
   --font-body: var(--archivo);
   --gutter: clamp(1rem, 2vw, 1.75rem);
@@ -413,25 +412,38 @@ a {
   margin-top: 0.6rem;
 }
 
-/* --------------------------------------------------------------- wordwall */
+/* --------------------------------------------------------------- logowall */
 
-.wordwall {
-  overflow: hidden;
-  padding: clamp(2rem, 6vh, 4rem) 0 0;
+.logos {
+  padding: clamp(2rem, 6vh, 4rem) var(--gutter) 0;
 }
 
-.wordwall__row {
-  font-family: var(--font-display), sans-serif;
-  font-size: clamp(4rem, 12.5vw, 12rem);
-  line-height: 0.92;
-  white-space: nowrap;
-  color: var(--grey-word);
+.logowall {
+  overflow: hidden;
+  margin: clamp(1.5rem, 4vh, 2.5rem) calc(-1 * var(--gutter)) 0;
+}
+
+.logowall__row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(2.5rem, 6vw, 5rem);
+  width: max-content;
+  min-width: 100%;
+  padding: clamp(1rem, 2.5vh, 1.75rem) clamp(2.5rem, 6vw, 5rem);
   will-change: transform;
 }
 
-.wordwall__row strong {
-  font-weight: 400;
-  color: var(--black);
+.logowall__logo {
+  height: clamp(2rem, 4.5vw, 3.25rem);
+  width: auto;
+  filter: grayscale(1);
+  mix-blend-mode: multiply;
+  opacity: 0.82;
+}
+
+.logowall__logo--invert {
+  filter: grayscale(1) invert(1) brightness(1.35);
 }
 
 /* ------------------------------------------------------------- designline */
@@ -745,7 +757,7 @@ a {
   .is-visible .world-map__dot,
   .is-visible .world-map__label { animation-duration: 0.01s; }
   .hero2__scroll { animation: none; }
-  .wordwall__row { transform: none !important; }
+  .logowall__row { transform: none !important; }
 }
 
 /* -------------------------------------------------------------- responsive */

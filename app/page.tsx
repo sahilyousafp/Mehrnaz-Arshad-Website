@@ -1,12 +1,21 @@
 import Image from "next/image";
 import Link from "next/link";
+import LogoWall from "@/components/LogoWall";
 import Reveal from "@/components/Reveal";
 import { NavLinks } from "@/components/SiteHeader";
 import Wordmark from "@/components/Wordmark";
-import WordWall from "@/components/WordWall";
 import WorldMap from "@/components/WorldMap";
-import { otherPartners, partnerNetwork, site } from "@/content/site";
-import { gallery, heroImage, imagePath, visibleProjects } from "@/lib/content";
+import { partnerNetwork, site } from "@/content/site";
+import {
+  gallery,
+  heroImage,
+  imagePath,
+  logoPath,
+  projectAlt,
+  projectTitle,
+  visibleEventLogos,
+  visibleProjects,
+} from "@/lib/content";
 
 const EXPERTISE = ["Design", "Visualise", "Build", "Install"];
 
@@ -36,13 +45,26 @@ export default function Home() {
   const heroFile =
     gallery(featured.slug).find((i) => i.file !== featuredPanel.file) ?? featuredPanel;
   const introProject = visibleProjects[2] ?? featured;
+  const logos = visibleEventLogos.map((logo) => ({
+    src: logoPath(logo.file),
+    name: logo.name,
+    width: logo.width,
+    height: logo.height,
+    invert: logo.invert,
+  }));
+  const perRow = Math.ceil(logos.length / 3);
+  const logoRows = [
+    logos.slice(0, perRow),
+    logos.slice(perRow, perRow * 2),
+    logos.slice(perRow * 2),
+  ];
 
   return (
     <main>
       <section className="hero2">
         <Image
           src={imagePath(featured.slug, heroFile.file)}
-          alt={`${featured.client} stand at ${featured.event}`}
+          alt={projectAlt(featured)}
           fill
           priority
           sizes="100vw"
@@ -66,9 +88,7 @@ export default function Home() {
             Scroll
           </span>
           <div className="hero2__feature">
-            <p className="t-label">
-              {featured.client}, {featured.event}, {featured.year}
-            </p>
+            <p className="t-label">{projectTitle(featured)}</p>
             <ALink href={`/projects/${featured.slug}`}>View the project</ALink>
           </div>
         </div>
@@ -101,7 +121,7 @@ export default function Home() {
           <div className="intro__media">
             <Image
               src={imagePath(introProject.slug, heroImage(introProject).file)}
-              alt={`${introProject.client} stand at ${introProject.event}`}
+              alt={projectAlt(introProject)}
               width={gallery(introProject.slug)[0].width}
               height={gallery(introProject.slug)[0].height}
               sizes="(max-width: 860px) 100vw, 40vw"
@@ -152,13 +172,13 @@ export default function Home() {
               <div className="card__media">
                 <Image
                   src={imagePath(project.slug, heroImage(project).file)}
-                  alt={`${project.client} stand at ${project.event}`}
+                  alt={projectAlt(project)}
                   fill
                   sizes="(max-width: 860px) 100vw, 50vw"
                 />
               </div>
               <h2 className="card__title">
-                {project.client}, {project.event}, {project.year} {project.location.split(",")[0]}
+                {projectTitle(project)} {project.location?.split(",")[0] ?? ""}
               </h2>
               <span className="alink">
                 Discover{" "}
@@ -171,16 +191,10 @@ export default function Home() {
         </div>
       </section>
 
-      <WordWall
-        rows={[
-          <>
-            EXHIBITION <strong>MEHRNAZ</strong> RENDER 3D DESIGN <strong>STANDS</strong> CONCEPT
-          </>,
-          <>
-            MWC BUILD <strong>ARSHAD</strong> FITUR INSTALL DOHA <strong>MAKER</strong> BARCELONA
-          </>,
-        ]}
-      />
+      <section className="logos" aria-label="Exhibitions and venues">
+        <p className="t-label t-muted">Shows &amp; venues</p>
+        <LogoWall rows={logoRows} />
+      </section>
 
       <div className="designline t-label" aria-hidden>
         <span>Design</span>
@@ -199,12 +213,6 @@ export default function Home() {
               <li key={p.country}>
                 <span>{p.country}</span>
                 <span>{p.partner}</span>
-              </li>
-            ))}
-            {otherPartners.map((name) => (
-              <li key={name}>
-                <span>{name}</span>
-                <span></span>
               </li>
             ))}
           </ul>
