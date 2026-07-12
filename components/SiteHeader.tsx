@@ -1,48 +1,67 @@
 "use client";
 
-// Fixed header that switches from paper to ink text while a light section
-// (anything tagged data-header-ink) sits underneath it. Cheaper than
-// mix-blend-mode, which forces expensive compositing over the image reel.
+// Slim fixed header. On the home page it stays hidden while the hero's own
+// nav row ([data-hero-nav]) is on screen and fades in once it scrolls away;
+// on other pages it is always shown. Over dark sections ([data-header-invert])
+// the text flips to white.
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { site } from "@/content/site";
+
+export function NavLinks() {
+  return (
+    <nav className="main-nav" aria-label="Main">
+      <Link href="/#projects">Projects</Link>
+      <Link href="/#expertise">Expertise</Link>
+      <Link href="/#partners">Partners</Link>
+      <Link href="/#contact">Contact</Link>
+    </nav>
+  );
+}
 
 export default function SiteHeader() {
   const pathname = usePathname();
-  const [ink, setInk] = useState(false);
+  const [on, setOn] = useState(false);
+  const [invert, setInvert] = useState(false);
 
   useEffect(() => {
-    setInk(false);
-    const sections = Array.from(document.querySelectorAll("[data-header-ink]"));
+    const heroNav = document.querySelector("[data-hero-nav]");
+    if (!heroNav) {
+      setOn(true);
+    } else {
+      setOn(false);
+      const io = new IntersectionObserver(([e]) => setOn(!e.isIntersecting));
+      io.observe(heroNav);
+      return () => io.disconnect();
+    }
+  }, [pathname]);
+
+  useEffect(() => {
+    setInvert(false);
+    const sections = Array.from(document.querySelectorAll("[data-header-invert]"));
     if (sections.length === 0) return;
-    const underHeader = new Set<Element>();
-    const observer = new IntersectionObserver(
+    const under = new Set<Element>();
+    const io = new IntersectionObserver(
       (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) underHeader.add(entry.target);
-          else underHeader.delete(entry.target);
+        for (const e of entries) {
+          if (e.isIntersecting) under.add(e.target);
+          else under.delete(e.target);
         }
-        setInk(underHeader.size > 0);
+        setInvert(under.size > 0);
       },
-      // Only the strip the header occupies counts as "underneath".
-      { rootMargin: "0px 0px -93% 0px" },
+      { rootMargin: "0px 0px -94% 0px" },
     );
-    sections.forEach((s) => observer.observe(s));
-    return () => observer.disconnect();
+    sections.forEach((s) => io.observe(s));
+    return () => io.disconnect();
   }, [pathname]);
 
   return (
-    <header className={`site-header${ink ? " site-header--ink" : ""}`}>
-      <Link href="/" className="brand" aria-label={site.name}>
-        MEHRNAZ ARSHAD
+    <header className={`top-header${on ? " is-on" : ""}${invert ? " is-invert" : ""}`}>
+      <Link href="/" className="top-header__brand" aria-label="Mehrnaz Arshad">
+        MA
       </Link>
-      <nav className="site-nav" aria-label="Main">
-        <Link href="/#projects">Projects</Link>
-        <Link href="/#about">About</Link>
-        <Link href="/#contact">Contact</Link>
-      </nav>
+      <NavLinks />
     </header>
   );
 }

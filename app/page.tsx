@@ -1,139 +1,220 @@
 import Image from "next/image";
 import Link from "next/link";
 import Reveal from "@/components/Reveal";
+import { NavLinks } from "@/components/SiteHeader";
+import Wordmark from "@/components/Wordmark";
+import WordWall from "@/components/WordWall";
 import WorldMap from "@/components/WorldMap";
 import { otherPartners, partnerNetwork, site } from "@/content/site";
 import { gallery, heroImage, imagePath, visibleProjects } from "@/lib/content";
 
+const EXPERTISE = ["Design", "Visualise", "Build", "Install"];
+
+function ALink({ href, children }: { href: string; children: React.ReactNode }) {
+  const inner = (
+    <>
+      {children}{" "}
+      <span className="arw" aria-hidden>
+        ↘
+      </span>
+    </>
+  );
+  return href.startsWith("/") || href.startsWith("#") ? (
+    <Link className="alink" href={href}>
+      {inner}
+    </Link>
+  ) : (
+    <a className="alink" href={href}>
+      {inner}
+    </a>
+  );
+}
+
 export default function Home() {
   const featured = visibleProjects[0];
-  // The featured project opens the page AND leads the reel; use its alternate
-  // image up top so the two don't show the same photo back to back.
   const featuredPanel = heroImage(featured);
   const heroFile =
     gallery(featured.slug).find((i) => i.file !== featuredPanel.file) ?? featuredPanel;
-  const heroSrc = imagePath(featured.slug, heroFile.file);
-  const countries = new Set(partnerNetwork.map((p) => p.country)).size;
-  const partners = new Set([
-    ...visibleProjects.map((p) => p.partner),
-    ...partnerNetwork.flatMap((p) => (p.partner ? [p.partner] : [])),
-    ...otherPartners,
-  ]).size;
+  const introProject = visibleProjects[2] ?? featured;
 
   return (
     <main>
-      <section className="hero">
+      <section className="hero2">
         <Image
-          src={heroSrc}
+          src={imagePath(featured.slug, heroFile.file)}
           alt={`${featured.client} stand at ${featured.event}`}
           fill
           priority
           sizes="100vw"
-          className="hero__image"
+          className="hero2__bg"
         />
-        <div className="hero__scrim" />
-        <div className="hero__content">
-          <p className="label label--copper hero__role">{site.role}</p>
-          <h1 className="hero__name">
-            Mehrnaz
-            <br />
-            Arshad
-          </h1>
-          <div className="hero__meta label">
-            <span>Renders that get built</span>
-            <span className="hero__scroll-cue">Scroll</span>
+        <div className="hero2__shade" />
+        <Wordmark text="MEHRNAZ ARSHAD" className="hero2__mark" />
+        <div className="hero2__nav" data-hero-nav>
+          <NavLinks />
+          <span className="t-label">{site.base}</span>
+        </div>
+        <div className="hero2__spacer" />
+        <div className="hero2__bottom">
+          <div className="hero2__intro">
+            <p className="t-label">
+              Exhibition stand designer — from the first render to the show floor
+            </p>
+            <ALink href="#studio">More about Mehrnaz</ALink>
+          </div>
+          <span className="hero2__scroll" aria-hidden>
+            Scroll
+          </span>
+          <div className="hero2__feature">
+            <p className="t-label">
+              {featured.client}, {featured.event}, {featured.year}
+            </p>
+            <ALink href={`/projects/${featured.slug}`}>View the project</ALink>
           </div>
         </div>
       </section>
 
-      <section id="projects" className="reel" aria-label="Selected projects">
-        {visibleProjects.map((project, i) => (
-          <article key={project.slug} className="reel__item">
-            <div className="reel__panel">
-              <Image
-                src={imagePath(project.slug, heroImage(project).file)}
-                alt={`${project.client} stand at ${project.event}`}
-                fill
-                sizes="100vw"
-                loading={i < 2 ? "eager" : "lazy"}
-                className="reel__image"
-              />
-              <div className="reel__scrim" />
-              <div className="reel__caption">
-                <Reveal>
-                  <span className="reel__index">{String(i + 1).padStart(2, "0")}</span>
-                  <p className="label label--copper">{project.event}</p>
-                  <h2 className="reel__client">{project.client}</h2>
-                  <p className="reel__meta label">
-                    {project.location} · {project.year} · Built with {project.partner}
-                  </p>
-                </Reveal>
-                <Link href={`/projects/${project.slug}`} className="reel__open label">
-                  View project <span aria-hidden>→</span>
-                </Link>
-              </div>
-            </div>
-          </article>
-        ))}
-      </section>
-
-      <section id="about" className="about" data-header-ink>
-        <p className="label label--copper">About</p>
+      <section id="studio" className="intro">
         <Reveal>
-          <p className="about__statement">
-            Custom exhibition stands - from <em>first sketch</em> to the show
-            floor, delivered with trusted construction partners across{" "}
-            {countries} countries.
+          <p className="t-statement intro__statement">
+            Serving brands on the show floor, I design and deliver custom
+            exhibition stands — from concept and 3D visualisation to
+            fabrication and on-site installation, across Europe, the Middle
+            East and Asia.
           </p>
-          <div className="about__facts">
-            <div className="about__fact">
-              <strong>{visibleProjects.length}</strong>
-              <span className="label">Featured projects</span>
-            </div>
-            <div className="about__fact">
-              <strong>{countries}</strong>
-              <span className="label">Partner countries</span>
-            </div>
-            <div className="about__fact">
-              <strong>{partners}</strong>
-              <span className="label">Construction partners</span>
-            </div>
-          </div>
         </Reveal>
+        <div className="intro__cols">
+          <div>
+            <p>
+              From MWC Barcelona to Web Summit Qatar and the Farnborough
+              International Airshow, my stands are designed to stop visitors
+              mid-aisle — and engineered to survive the schedule of a live
+              show.
+            </p>
+            <p>
+              Working with trusted construction partners in nine countries, I
+              follow every project personally from the first sketch to
+              handover on site, so the stand that opens on day one is the
+              stand the client approved in the render.
+            </p>
+          </div>
+          <div className="intro__media">
+            <Image
+              src={imagePath(introProject.slug, heroImage(introProject).file)}
+              alt={`${introProject.client} stand at ${introProject.event}`}
+              width={gallery(introProject.slug)[0].width}
+              height={gallery(introProject.slug)[0].height}
+              sizes="(max-width: 860px) 100vw, 40vw"
+            />
+          </div>
+        </div>
+        <div className="intro__more">
+          <ALink href="#contact">Get in touch</ALink>
+        </div>
       </section>
 
-      <section id="contact" className="contact">
-        <div className="section-head section-head--dark">
-          <span className="label label--copper">Contact</span>
-          <span className="label reel__meta">Construction partner network</span>
+      <section id="expertise" className="expertise" data-header-invert>
+        <Image
+          src={imagePath(featured.slug, featuredPanel.file)}
+          alt=""
+          fill
+          sizes="100vw"
+          className="expertise__bg"
+          aria-hidden
+        />
+        <Reveal>
+          <p className="t-statement expertise__statement">
+            One designer, four stages: every stand follows the same path from
+            idea to opening day.
+          </p>
+        </Reveal>
+        <p className="expertise__note">
+          Each stage can be commissioned on its own or run as one continuous
+          chain — depending on the client, the venue and the deadline.
+        </p>
+        <ul className="expertise__list">
+          {EXPERTISE.map((word) => (
+            <li key={word} className="expertise__row">
+              {word}
+            </li>
+          ))}
+        </ul>
+        <div className="expertise__cta">
+          <ALink href="#projects">See the projects</ALink>
         </div>
-        <div className="contact__grid">
-          <div>
-            <h2 className="contact__title">
-              Let&apos;s build <em>your next stand</em> together.
-            </h2>
-            <ul className="partner-list">
-              {partnerNetwork.map((p) => (
-                <li key={p.country}>
-                  <span>{p.country}</span>
-                  <span>{p.partner}</span>
-                </li>
-              ))}
-              {otherPartners.map((name) => (
-                <li key={name}>
-                  <span>{name}</span>
-                  <span></span>
-                </li>
-              ))}
-            </ul>
-            <a className="contact__email" href={`mailto:${site.email}`}>
-              {site.email}
-            </a>
+      </section>
+
+      <section id="projects" className="projects2">
+        <p className="t-label">Selected projects</p>
+        <div className="projects2__grid">
+          {visibleProjects.map((project) => (
+            <Link key={project.slug} href={`/projects/${project.slug}`} className="card">
+              <div className="card__media">
+                <Image
+                  src={imagePath(project.slug, heroImage(project).file)}
+                  alt={`${project.client} stand at ${project.event}`}
+                  fill
+                  sizes="(max-width: 860px) 100vw, 50vw"
+                />
+              </div>
+              <h2 className="card__title">
+                {project.client}, {project.event}, {project.year} {project.location.split(",")[0]}
+              </h2>
+              <span className="alink">
+                Discover{" "}
+                <span className="arw" aria-hidden>
+                  ↘
+                </span>
+              </span>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <WordWall
+        rows={[
+          <>
+            EXHIBITION <strong>MEHRNAZ</strong> RENDER 3D DESIGN <strong>STANDS</strong> CONCEPT
+          </>,
+          <>
+            MWC BUILD <strong>ARSHAD</strong> FITUR INSTALL DOHA <strong>MAKER</strong> BARCELONA
+          </>,
+        ]}
+      />
+
+      <div className="designline t-label" aria-hidden>
+        <span>Design</span>
+        <span className="designline__rule" />
+        <span>Build</span>
+      </div>
+
+      <section id="partners" className="partners">
+        <div>
+          <p className="t-label t-muted">Construction partners</p>
+          <p className="t-statement partners__title">
+            Built with trusted partners across nine countries.
+          </p>
+          <ul className="partner-list">
+            {partnerNetwork.map((p) => (
+              <li key={p.country}>
+                <span>{p.country}</span>
+                <span>{p.partner}</span>
+              </li>
+            ))}
+            {otherPartners.map((name) => (
+              <li key={name}>
+                <span>{name}</span>
+                <span></span>
+              </li>
+            ))}
+          </ul>
+          <div className="partners__email">
+            <ALink href={`mailto:${site.email}`}>{site.email}</ALink>
           </div>
-          <Reveal>
-            <WorldMap />
-          </Reveal>
         </div>
+        <Reveal>
+          <WorldMap />
+        </Reveal>
       </section>
     </main>
   );

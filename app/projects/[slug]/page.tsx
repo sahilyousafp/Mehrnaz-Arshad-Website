@@ -41,31 +41,31 @@ export default async function ProjectPage({
 
   return (
     <main>
-      <section className="project-hero" data-header-ink>
-        <p className="label label--copper">
-          {String(index + 1).padStart(2, "0")} · {project.event}
+      <section className="phero">
+        <p className="t-label t-muted">
+          {String(index + 1).padStart(2, "0")} — {project.event}
         </p>
-        <h1 className="project-hero__client">{project.client}</h1>
-        <div className="project-hero__meta">
+        <h1 className="phero__title">{project.client}</h1>
+        <div className="phero__meta">
           <div>
-            <span className="label">Event</span>
+            <span className="t-label">Event</span>
             <strong>{project.event}</strong>
           </div>
           <div>
-            <span className="label">Location</span>
+            <span className="t-label">Location</span>
             <strong>{project.location}</strong>
           </div>
           <div>
-            <span className="label">Year</span>
+            <span className="t-label">Year</span>
             <strong>{project.year}</strong>
           </div>
           <div>
-            <span className="label">Built with</span>
+            <span className="t-label">Built with</span>
             <strong>{project.partner}</strong>
           </div>
           {project.boothSize && (
             <div>
-              <span className="label">Stand size</span>
+              <span className="t-label">Stand size</span>
               <strong>{project.boothSize}</strong>
             </div>
           )}
@@ -86,13 +86,17 @@ export default async function ProjectPage({
         ))}
       </div>
 
-      <nav className="project-nav" aria-label="More projects" data-header-ink>
+      <nav className="project-nav" aria-label="More projects">
         <Link href={`/projects/${prev.slug}`}>
-          <span className="label label--copper">← Previous</span>
+          <span className="t-label t-muted">
+            <span aria-hidden>↖</span> Previous
+          </span>
           <strong>{prev.client}</strong>
         </Link>
         <Link href={`/projects/${next.slug}`} className="project-nav__next">
-          <span className="label label--copper">Next →</span>
+          <span className="t-label t-muted">
+            Next <span aria-hidden>↘</span>
+          </span>
           <strong>{next.client}</strong>
         </Link>
       </nav>

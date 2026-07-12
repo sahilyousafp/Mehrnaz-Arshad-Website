@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
-import { Archivo, Fraunces } from "next/font/google";
+import { Archivo, Bebas_Neue } from "next/font/google";
+import Image from "next/image";
 import SiteHeader from "@/components/SiteHeader";
+import Wordmark from "@/components/Wordmark";
 import { site } from "@/content/site";
+import { heroImage, imagePath, visibleProjects } from "@/lib/content";
 import "./globals.css";
 
-const fraunces = Fraunces({
+const bebas = Bebas_Neue({
   subsets: ["latin"],
-  style: ["normal", "italic"],
-  axes: ["opsz"],
-  variable: "--fraunces",
+  weight: "400",
+  variable: "--bebas",
 });
 
 const archivo = Archivo({
@@ -23,18 +25,36 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const footerProject = visibleProjects[visibleProjects.length - 1];
+  const footerBg = imagePath(footerProject.slug, heroImage(footerProject).file);
+
   return (
-    <html lang="en">
-      <body className={`${fraunces.variable} ${archivo.variable}`}>
+    <html lang="en" className={`${bebas.variable} ${archivo.variable}`}>
+      <body>
         <SiteHeader />
         {children}
-        <footer className="site-footer">
-          <span className="label">{site.name}</span>
-          <span>{site.role}</span>
-          <a href={`mailto:${site.email}`}>{site.email}</a>
-          <span>
-            {site.base} · © {new Date().getFullYear()}
-          </span>
+        <footer className="footer2" id="contact" data-header-invert>
+          <Image src={footerBg} alt="" fill sizes="100vw" className="footer2__bg" aria-hidden />
+          <div className="footer2__top">
+            <div className="footer2__links">
+              <a className="alink" href={`mailto:${site.email}`}>
+                <span className="arw" aria-hidden>
+                  ↘
+                </span>
+                Email
+              </a>
+              <a className="alink" href={site.linkedin} target="_blank" rel="noreferrer">
+                <span className="arw" aria-hidden>
+                  ↘
+                </span>
+                LinkedIn
+              </a>
+            </div>
+            <p className="footer2__legal">
+              © {new Date().getFullYear()}, {site.name}. {site.role} — {site.base}
+            </p>
+          </div>
+          <Wordmark text="MEHRNAZ ARSHAD" className="footer2__mark" />
         </footer>
       </body>
     </html>
