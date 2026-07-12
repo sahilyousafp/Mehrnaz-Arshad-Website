@@ -34,8 +34,11 @@ export default function Reveal({
   }, []);
 
   return (
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    <Tag ref={ref as any} className={`reveal ${className}`} style={{ "--reveal-delay": `${delay}s` } as React.CSSProperties}>
+    <Tag
+      ref={ref as any}
+      className={`reveal ${className}`}
+      style={{ "--reveal-delay": `${delay}s` } as React.CSSProperties}
+    >
       {children}
     </Tag>
   );

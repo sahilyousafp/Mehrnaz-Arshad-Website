@@ -22,23 +22,29 @@ export function NavLinks() {
 
 export default function SiteHeader() {
   const pathname = usePathname();
-  const [on, setOn] = useState(false);
+  const hasHero = pathname === "/";
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  const [on, setOn] = useState(!hasHero);
   const [invert, setInvert] = useState(false);
 
-  useEffect(() => {
-    const heroNav = document.querySelector("[data-hero-nav]");
-    if (!heroNav) {
-      setOn(true);
-    } else {
-      setOn(false);
-      const io = new IntersectionObserver(([e]) => setOn(!e.isIntersecting));
-      io.observe(heroNav);
-      return () => io.disconnect();
-    }
-  }, [pathname]);
+  // Reset the derived on/invert state as soon as the route changes, before
+  // the effects below re-subscribe their observers for the new page.
+  if (pathname !== prevPathname) {
+    setPrevPathname(pathname);
+    setOn(!hasHero);
+    setInvert(false);
+  }
 
   useEffect(() => {
-    setInvert(false);
+    if (!hasHero) return;
+    const heroNav = document.querySelector("[data-hero-nav]");
+    if (!heroNav) return;
+    const io = new IntersectionObserver(([e]) => setOn(!e.isIntersecting));
+    io.observe(heroNav);
+    return () => io.disconnect();
+  }, [hasHero]);
+
+  useEffect(() => {
     const sections = Array.from(document.querySelectorAll("[data-header-invert]"));
     if (sections.length === 0) return;
     const under = new Set<Element>();
