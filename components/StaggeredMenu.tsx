@@ -7,7 +7,8 @@
 
 import { gsap } from "gsap";
 import Link from "next/link";
-import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { useLocale } from "./LocaleProvider";
 
 export type StaggeredMenuItem = {
   label: string;
@@ -39,6 +40,8 @@ export type StaggeredMenuProps = {
   closeOnClickAway?: boolean;
   /** Hides the logo/toggle header (e.g. while a page's own hero nav is on screen), leaving the panel logic untouched. */
   hideToggle?: boolean;
+  /** Rendered pinned to the panel's top-left corner (e.g. a language toggle). */
+  extraPanelContent?: ReactNode;
   onMenuOpen?: () => void;
   onMenuClose?: () => void;
 };
@@ -63,9 +66,11 @@ export default function StaggeredMenu({
   isFixed = false,
   closeOnClickAway = true,
   hideToggle = false,
+  extraPanelContent,
   onMenuOpen,
   onMenuClose,
 }: StaggeredMenuProps) {
+  const { t, locale } = useLocale();
   const [open, setOpen] = useState(false);
   const openRef = useRef(false);
   const panelRef = useRef<HTMLElement | null>(null);
@@ -132,6 +137,7 @@ export default function StaggeredMenu({
     );
     const socialTitle = panel.querySelector<HTMLElement>(".sm-socials-title");
     const socialLinks = Array.from(panel.querySelectorAll<HTMLElement>(".sm-socials-link"));
+    const langToggle = panel.querySelector<HTMLElement>(".sm-lang-toggle");
 
     const offscreen = position === "left" ? -100 : 100;
     const layerStates = layers.map((el) => ({ el, start: offscreen }));
@@ -148,6 +154,9 @@ export default function StaggeredMenu({
     }
     if (socialLinks.length) {
       gsap.set(socialLinks, { y: 25, opacity: 0 });
+    }
+    if (langToggle) {
+      gsap.set(langToggle, { y: 25, opacity: 0 });
     }
 
     const tl = gsap.timeline({ paused: true });
@@ -214,6 +223,13 @@ export default function StaggeredMenu({
           socialsStart + 0.04,
         );
       }
+      if (langToggle) {
+        tl.to(
+          langToggle,
+          { y: 0, opacity: 1, duration: 0.55, ease: "power3.out" },
+          socialsStart + 0.08,
+        );
+      }
     }
 
     openTlRef.current = tl;
@@ -263,8 +279,10 @@ export default function StaggeredMenu({
         }
         const socialTitle = panel.querySelector<HTMLElement>(".sm-socials-title");
         const socialLinks = Array.from(panel.querySelectorAll<HTMLElement>(".sm-socials-link"));
+        const langToggle = panel.querySelector<HTMLElement>(".sm-lang-toggle");
         if (socialTitle) gsap.set(socialTitle, { opacity: 0 });
         if (socialLinks.length) gsap.set(socialLinks, { y: 25, opacity: 0 });
+        if (langToggle) gsap.set(langToggle, { y: 25, opacity: 0 });
         busyRef.current = false;
       },
     });
@@ -323,7 +341,7 @@ export default function StaggeredMenu({
     if (!inner) return;
     textCycleAnimRef.current?.kill();
 
-    const label = opening ? "Close" : "Menu";
+    const label = opening ? t("closeLabel") : t("menuLabel");
     const tl = gsap.timeline();
     tl.to(inner, { yPercent: -100, duration: 0.22, ease: "power3.in" })
       .call(() => {
@@ -332,7 +350,16 @@ export default function StaggeredMenu({
       })
       .to(inner, { yPercent: 0, duration: 0.3, ease: "power3.out" });
     textCycleAnimRef.current = tl;
-  }, []);
+  }, [t]);
+
+  // Re-syncs the toggle's imperatively-owned label text when the locale
+  // itself changes (not on open/close), so a language switch doesn't leave
+  // a stale "Menu"/"Close" string sitting there until the next click.
+  useEffect(() => {
+    const inner = textInnerRef.current;
+    if (!inner) return;
+    inner.textContent = openRef.current ? t("closeLabel") : t("menuLabel");
+  }, [locale, t]);
 
   const toggleMenu = useCallback(() => {
     const target = !openRef.current;
@@ -411,7 +438,7 @@ export default function StaggeredMenu({
         <button
           ref={toggleBtnRef}
           className="sm-toggle"
-          aria-label={open ? "Close menu" : "Open menu"}
+          aria-label={open ? t("closeMenuAria") : t("openMenuAria")}
           aria-expanded={open}
           aria-controls="staggered-menu-panel"
           onClick={toggleMenu}
@@ -419,7 +446,7 @@ export default function StaggeredMenu({
         >
           <span ref={textWrapRef} className="sm-toggle-textWrap" aria-hidden="true">
             <span ref={textInnerRef} className="sm-toggle-textInner">
-              Menu
+              {t("menuLabel")}
             </span>
           </span>
           <span ref={iconRef} className="sm-icon" aria-hidden="true">
@@ -435,6 +462,7 @@ export default function StaggeredMenu({
         className="staggered-menu-panel"
         aria-hidden={!open}
       >
+        {extraPanelContent}
         <div className="sm-panel-inner">
           <ul className="sm-panel-list" role="list" data-numbering={displayItemNumbering || undefined}>
             {items && items.length ? (
@@ -476,7 +504,7 @@ export default function StaggeredMenu({
           </ul>
           {displaySocials && socialItems && socialItems.length > 0 && (
             <div className="sm-socials" aria-label="Social links">
-              <h3 className="sm-socials-title">Socials</h3>
+              <h3 className="sm-socials-title">{t("socialsTitle")}</h3>
               <ul className="sm-socials-list" role="list">
                 {socialItems.map((s, i) => (
                   <li key={s.label + i} className="sm-socials-item">

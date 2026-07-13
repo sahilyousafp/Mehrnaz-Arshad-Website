@@ -21,6 +21,12 @@ export default function ContactImageTrail({ items }: { items: ImageTrailItem[] }
   const [order, setOrder] = useState(items);
 
   useEffect(() => {
+    // Randomizing during render (or the initial state initializer) would
+    // make this render's output diverge from the server-rendered HTML,
+    // which is exactly the hydration mismatch this component exists to
+    // avoid - the shuffle has to happen post-mount, in an effect, and only
+    // once (re-shuffling on every `items` change would fight the trail).
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setOrder(shuffle(items));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

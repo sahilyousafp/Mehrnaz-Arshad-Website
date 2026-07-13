@@ -4,7 +4,9 @@ import { Archivo, Bebas_Neue } from "next/font/google";
 import Image from "next/image";
 import ContactImageTrail from "@/components/ContactImageTrail";
 import FooterLinks from "@/components/FooterLinks";
+import { LocaleProvider } from "@/components/LocaleProvider";
 import SiteHeader from "@/components/SiteHeader";
+import T from "@/components/T";
 import Wordmark from "@/components/Wordmark";
 import { site } from "@/content/site";
 import { heroImage, imagePath, projectAlt, visibleProjects } from "@/lib/content";
@@ -37,26 +39,28 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${bebas.variable} ${archivo.variable}`}>
       <body>
-        <SiteHeader />
-        {children}
-        <footer className="footer2" id="contact" data-header-invert>
-          <Image
-            src="/pinned/hero-contact.jpg"
-            alt=""
-            fill
-            sizes="100vw"
-            className="footer2__bg"
-            aria-hidden
-          />
-          <ContactImageTrail items={trailItems} />
-          <div className="footer2__top">
-            <FooterLinks email={site.email} linkedin={site.linkedin} />
-            <p className="footer2__legal">
-              © {new Date().getFullYear()}, {site.name}. {site.role} — {site.base}
-            </p>
-          </div>
-          <Wordmark text="MEHRNAZ ARSHAD" className="footer2__mark" />
-        </footer>
+        <LocaleProvider>
+          <SiteHeader />
+          {children}
+          <footer className="footer2" id="contact" data-header-invert>
+            <Image
+              src="/pinned/hero-contact.jpg"
+              alt=""
+              fill
+              sizes="100vw"
+              className="footer2__bg"
+              aria-hidden
+            />
+            <ContactImageTrail items={trailItems} />
+            <div className="footer2__top">
+              <FooterLinks email={site.email} linkedin={site.linkedin} />
+              <p className="footer2__legal">
+                © {new Date().getFullYear()}, {site.name}. <T k="role" /> — {site.base}
+              </p>
+            </div>
+            <Wordmark text="MEHRNAZ ARSHAD" className="footer2__mark" />
+          </footer>
+        </LocaleProvider>
         <Analytics />
       </body>
     </html>

@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import ProjectNav from "@/components/ProjectNav";
 import Reveal from "@/components/Reveal";
+import T from "@/components/T";
 import { gallery, imagePath, projectAlt, visibleProjects } from "@/lib/content";
 
 export const dynamicParams = false;
@@ -59,31 +61,41 @@ export default async function ProjectPage({
         <div className="phero__meta">
           {project.event && (
             <div>
-              <span className="t-label">Event</span>
+              <span className="t-label">
+                <T k="eventLabel" />
+              </span>
               <strong>{project.event}</strong>
             </div>
           )}
           {project.location && (
             <div>
-              <span className="t-label">Location</span>
+              <span className="t-label">
+                <T k="locationLabel" />
+              </span>
               <strong>{project.location}</strong>
             </div>
           )}
           {project.year && (
             <div>
-              <span className="t-label">Year</span>
+              <span className="t-label">
+                <T k="yearLabel" />
+              </span>
               <strong>{project.year}</strong>
             </div>
           )}
           {project.partner && (
             <div>
-              <span className="t-label">Built with</span>
+              <span className="t-label">
+                <T k="builtWithLabel" />
+              </span>
               <strong>{project.partner}</strong>
             </div>
           )}
           {project.boothSize && (
             <div>
-              <span className="t-label">Stand size</span>
+              <span className="t-label">
+                <T k="standSizeLabel" />
+              </span>
               <strong>{project.boothSize}</strong>
             </div>
           )}
@@ -104,20 +116,20 @@ export default async function ProjectPage({
         ))}
       </div>
 
-      <nav className="project-nav" aria-label="More projects">
+      <ProjectNav>
         <Link href={`/projects/${prev.slug}`}>
           <span className="t-label t-muted">
-            <span aria-hidden>↖</span> Previous
+            <span aria-hidden>↖</span> <T k="previous" />
           </span>
           <strong>{prev.client}</strong>
         </Link>
         <Link href={`/projects/${next.slug}`} className="project-nav__next">
           <span className="t-label t-muted">
-            Next <span aria-hidden>↘</span>
+            <T k="next" /> <span aria-hidden>↘</span>
           </span>
           <strong>{next.client}</strong>
         </Link>
-      </nav>
+      </ProjectNav>
     </main>
   );
 }

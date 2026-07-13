@@ -8,39 +8,52 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import type { TranslationKey } from "@/content/i18n";
+import { useLocale } from "./LocaleProvider";
 
-type Stage = {
-  word: string;
+const STAGE_KEYS: {
+  id: string;
   image: string;
-  caption: string[];
-};
-
-const STAGES: Stage[] = [
+  word: TranslationKey;
+  captions: TranslationKey[];
+}[] = [
   {
-    word: "Design",
+    id: "design",
     image: "/process/design.jpg",
-    caption: ["Client brief & concept sketches", "3D CAD modelling", "Layout & material planning"],
+    word: "stageDesign",
+    captions: ["captionDesign1", "captionDesign2", "captionDesign3"],
   },
   {
-    word: "Visualise",
+    id: "visualise",
     image: "/process/visualise.jpg",
-    caption: ["Photoreal 3D renders", "Client review & revisions", "Final sign-off"],
+    word: "stageVisualise",
+    captions: ["captionVisualise1", "captionVisualise2", "captionVisualise3"],
   },
   {
-    word: "Build",
+    id: "build",
     image: "/process/build.jpg",
-    caption: ["Multi-material fabrication", "Joinery, metalwork & finishing", "Quality check before ship"],
+    word: "stageBuild",
+    captions: ["captionBuild1", "captionBuild2", "captionBuild3"],
   },
   {
-    word: "Install",
+    id: "install",
     image: "/process/install.jpg",
-    caption: ["On-site assembly", "Rigging, lighting & AV", "Walkthrough before opening"],
+    word: "stageInstall",
+    captions: ["captionInstall1", "captionInstall2", "captionInstall3"],
   },
 ];
 
 export default function ExpertiseProcess({ ambientImage }: { ambientImage: string }) {
+  const { t } = useLocale();
   const [active, setActive] = useState<number | null>(null);
   const [lastActive, setLastActive] = useState(0);
+
+  const stages = STAGE_KEYS.map((s) => ({
+    id: s.id,
+    image: s.image,
+    word: t(s.word),
+    caption: s.captions.map(t),
+  }));
 
   function activate(i: number) {
     setActive(i);
@@ -54,9 +67,9 @@ export default function ExpertiseProcess({ ambientImage }: { ambientImage: strin
   return (
     <>
       <Image src={ambientImage} alt="" fill sizes="100vw" className="expertise__bg" aria-hidden />
-      {STAGES.map((stage, i) => (
+      {stages.map((stage, i) => (
         <Image
-          key={stage.word}
+          key={stage.id}
           src={stage.image}
           alt=""
           fill
@@ -67,9 +80,9 @@ export default function ExpertiseProcess({ ambientImage }: { ambientImage: strin
       ))}
       <div className="expertise__interactive">
         <ul className="expertise__list">
-          {STAGES.map((stage, i) => (
+          {stages.map((stage, i) => (
             <li
-              key={stage.word}
+              key={stage.id}
               tabIndex={0}
               className={`expertise__row${active === i ? " is-active" : ""}${
                 active !== null && active !== i ? " is-dim" : ""
@@ -84,8 +97,8 @@ export default function ExpertiseProcess({ ambientImage }: { ambientImage: strin
           ))}
         </ul>
         <ul className={`expertise__caption${active !== null ? " is-visible" : ""}`} aria-hidden={active === null}>
-          {STAGES[lastActive].caption.map((line) => (
-            <li key={line}>{line}</li>
+          {stages[lastActive].caption.map((line, i) => (
+            <li key={i}>{line}</li>
           ))}
         </ul>
       </div>

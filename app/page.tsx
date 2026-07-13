@@ -1,12 +1,14 @@
 import Image from "next/image";
 import ALink from "@/components/ALink";
 import ExpertiseProcess from "@/components/ExpertiseProcess";
+import LanguageToggle from "@/components/LanguageToggle";
 import LogoWall from "@/components/LogoWall";
 import Parallax from "@/components/Parallax";
 import ProjectCardLink from "@/components/ProjectCardLink";
 import Reveal from "@/components/Reveal";
 import Ribbons from "@/components/Ribbons";
 import { NavLinks } from "@/components/SiteHeader";
+import T from "@/components/T";
 import Wordmark from "@/components/Wordmark";
 import WorldMap from "@/components/WorldMap";
 import { partnerNetwork, site } from "@/content/site";
@@ -63,13 +65,16 @@ export default function Home() {
         <div className="hero2__spacer" />
         <div className="hero2__bottom">
           <div className="hero2__intro">
+            <LanguageToggle className="hero2__lang-toggle" />
             <p className="t-label">
-              Exhibition stand designer — from the first render to the show floor
+              <T k="heroTagline" />
             </p>
-            <ALink href="#studio">More about Mehrnaz</ALink>
+            <ALink href="#studio">
+              <T k="moreAboutMehrnaz" />
+            </ALink>
           </div>
           <span className="hero2__scroll" aria-hidden>
-            Scroll
+            <T k="scroll" />
           </span>
           <div className="hero2__feature">
             <p className="t-label">{projectTitle(featured)}</p>
@@ -78,7 +83,7 @@ export default function Home() {
               trackEvent={`project_click_${featured.slug}`}
               trackProps={{ client: featured.client, source: "hero" }}
             >
-              View the project
+              <T k="viewTheProject" />
             </ALink>
           </div>
         </div>
@@ -87,25 +92,16 @@ export default function Home() {
       <section id="studio" className="intro">
         <Reveal>
           <p className="t-statement intro__statement">
-            Serving brands on the show floor, I design and deliver custom
-            exhibition stands — from concept and 3D visualisation to
-            fabrication and on-site installation, across Europe, the Middle
-            East and Asia.
+            <T k="introStatement" />
           </p>
         </Reveal>
         <div className="intro__cols">
           <div>
             <p>
-              From MWC Barcelona to Web Summit Qatar and the Farnborough
-              International Airshow, my stands are designed to stop visitors
-              mid-aisle — and engineered to survive the schedule of a live
-              show.
+              <T k="introP1" />
             </p>
             <p>
-              Working with trusted construction partners in nine countries, I
-              follow every project personally from the first sketch to
-              handover on site, so the stand that opens on day one is the
-              stand the client approved in the render.
+              <T k="introP2" />
             </p>
           </div>
           <figure className="intro__media">
@@ -120,7 +116,7 @@ export default function Home() {
         </div>
         <div className="intro__more">
           <ALink href="#contact" trackEvent="contact_click" trackProps={{ source: "intro-cta" }}>
-            Get in touch
+            <T k="getInTouch" />
           </ALink>
         </div>
       </section>
@@ -128,22 +124,24 @@ export default function Home() {
       <section id="expertise" className="expertise" data-header-invert>
         <Reveal>
           <p className="t-statement expertise__statement">
-            One designer, four stages: every stand follows the same path from
-            idea to opening day.
+            <T k="expertiseStatement" />
           </p>
         </Reveal>
         <p className="expertise__note">
-          Each stage can be commissioned on its own or run as one continuous
-          chain — depending on the client, the venue and the deadline.
+          <T k="expertiseNote" />
         </p>
         <ExpertiseProcess ambientImage={imagePath(featured.slug, featuredPanel.file)} />
         <div className="expertise__cta">
-          <ALink href="#projects">See the projects</ALink>
+          <ALink href="#projects">
+            <T k="seeTheProjects" />
+          </ALink>
         </div>
       </section>
 
       <section id="projects" className="projects2">
-        <p className="t-label">Selected projects</p>
+        <p className="t-label">
+          <T k="selectedProjects" />
+        </p>
         <div className="projects2__grid">
           {visibleProjects.map((project) => (
             <ProjectCardLink key={project.slug} slug={project.slug} client={project.client} className="card">
@@ -162,7 +160,7 @@ export default function Home() {
                 {projectTitle(project)} {project.location?.split(",")[0] ?? ""}
               </h2>
               <span className="alink">
-                Discover{" "}
+                <T k="discover" />{" "}
                 <span className="arw" aria-hidden>
                   ↘
                 </span>
@@ -173,21 +171,29 @@ export default function Home() {
       </section>
 
       <section className="logos" aria-label="Exhibitions and venues">
-        <p className="t-label t-muted">Shows &amp; venues</p>
+        <p className="t-label t-muted">
+          <T k="showsVenues" />
+        </p>
         <LogoWall rows={logoRows} />
       </section>
 
       <div className="designline t-label" aria-hidden>
-        <span>Design</span>
+        <span>
+          <T k="stageDesign" />
+        </span>
         <span className="designline__rule" />
-        <span>Build</span>
+        <span>
+          <T k="stageBuild" />
+        </span>
       </div>
 
       <section id="partners" className="partners">
         <div>
-          <p className="t-label t-muted">Construction partners</p>
+          <p className="t-label t-muted">
+            <T k="constructionPartners" />
+          </p>
           <p className="t-statement partners__title">
-            Built with trusted partners across nine countries.
+            <T k="partnersTitle" />
           </p>
           <ul className="partner-list">
             {partnerNetwork.map((p) => (

@@ -11,29 +11,20 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { site } from "@/content/site";
 import { trackContactClick, trackEmailClick, trackLinkedinClick } from "@/lib/analytics";
+import LanguageToggle from "./LanguageToggle";
+import { useLocale } from "./LocaleProvider";
 import StaggeredMenu from "./StaggeredMenu";
 import "./StaggeredMenu.css";
 
-const NAV_ITEMS = [
-  { label: "Projects", ariaLabel: "See selected projects", link: "/#projects" },
-  { label: "Expertise", ariaLabel: "See the design process", link: "/#expertise" },
-  { label: "Partners", ariaLabel: "See construction partners", link: "/#partners" },
-  {
-    label: "Contact",
-    ariaLabel: "Get in touch",
-    link: "/#contact",
-    onClick: () => trackContactClick("menu-nav"),
-  },
-];
-
 export function NavLinks() {
+  const { t } = useLocale();
   return (
     <nav className="main-nav" aria-label="Main">
-      <Link href="/#projects">Projects</Link>
-      <Link href="/#expertise">Expertise</Link>
-      <Link href="/#partners">Partners</Link>
+      <Link href="/#projects">{t("navProjects")}</Link>
+      <Link href="/#expertise">{t("navExpertise")}</Link>
+      <Link href="/#partners">{t("navPartners")}</Link>
       <Link href="/#contact" onClick={() => trackContactClick("hero-nav")}>
-        Contact
+        {t("navContact")}
       </Link>
     </nav>
   );
@@ -81,9 +72,23 @@ export default function SiteHeader() {
     return () => io.disconnect();
   }, [pathname]);
 
+  const { t } = useLocale();
+
+  const navItems = [
+    { label: t("navProjects"), ariaLabel: t("navProjectsAria"), link: "/#projects" },
+    { label: t("navExpertise"), ariaLabel: t("navExpertiseAria"), link: "/#expertise" },
+    { label: t("navPartners"), ariaLabel: t("navPartnersAria"), link: "/#partners" },
+    {
+      label: t("navContact"),
+      ariaLabel: t("navContactAria"),
+      link: "/#contact",
+      onClick: () => trackContactClick("menu-nav"),
+    },
+  ];
+
   const socialItems = [
-    { label: "Email", link: `mailto:${site.email}`, onClick: () => trackEmailClick("menu-socials") },
-    { label: "LinkedIn", link: site.linkedin, onClick: () => trackLinkedinClick("menu-socials") },
+    { label: t("socialEmail"), link: `mailto:${site.email}`, onClick: () => trackEmailClick("menu-socials") },
+    { label: t("socialLinkedin"), link: site.linkedin, onClick: () => trackLinkedinClick("menu-socials") },
   ];
 
   return (
@@ -91,7 +96,7 @@ export default function SiteHeader() {
       position="right"
       isFixed
       hideToggle={!on}
-      items={NAV_ITEMS}
+      items={navItems}
       socialItems={socialItems}
       displaySocials
       displayItemNumbering
@@ -101,6 +106,7 @@ export default function SiteHeader() {
       menuButtonColor={invert ? "#fff" : "#0a0a0a"}
       openMenuButtonColor="#0a0a0a"
       changeMenuColorOnOpen
+      extraPanelContent={<LanguageToggle className="sm-lang-toggle" />}
     />
   );
 }
