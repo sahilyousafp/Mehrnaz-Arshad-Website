@@ -41,7 +41,8 @@ const en = {
     "Working with trusted construction partners in nine countries, I follow every project personally from the first sketch to handover on site, so the stand that opens on day one is the stand the client approved in the render.",
   getInTouch: "Get in touch",
 
-  expertiseStatement: "One designer, four stages: every stand follows the same path from idea to opening day.",
+  expertiseStatement:
+    "One Advanced Exhibition Director, Designer, Project Manager — four stages: every stand follows the same path from idea to opening day.",
   expertiseNote:
     "Each stage can be commissioned on its own or run as one continuous chain — depending on the client, the venue and the deadline.",
   seeTheProjects: "See the projects",
@@ -115,7 +116,8 @@ const es: Record<TranslationKey, string> = {
     "Trabajando con socios de construcción de confianza en nueve países, sigo cada proyecto personalmente desde el primer boceto hasta la entrega en el sitio, para que el stand que abre el primer día sea el mismo que el cliente aprobó en el render.",
   getInTouch: "Ponte en contacto",
 
-  expertiseStatement: "Una diseñadora, cuatro etapas: cada stand sigue el mismo camino desde la idea hasta el día de apertura.",
+  expertiseStatement:
+    "Una Directora de Exposiciones Avanzada, Diseñadora y Project Manager — cuatro etapas: cada stand sigue el mismo camino desde la idea hasta el día de apertura.",
   expertiseNote:
     "Cada etapa puede encargarse por separado o como una cadena continua — según el cliente, el recinto y el plazo.",
   seeTheProjects: "Ver los proyectos",
