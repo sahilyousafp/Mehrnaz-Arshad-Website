@@ -21,6 +21,7 @@ import re
 import shutil
 import sys
 from pathlib import Path
+from typing import Optional
 
 DRIVE_FOLDER_URL = (
     "https://drive.google.com/drive/folders/1HINqeqV_5ayFWX65cD7hS1cO6CnykXlQ"
@@ -75,7 +76,7 @@ def download_folder(url: str, tmp: Path) -> None:
     gdown.download_folder(url=url, output=str(tmp), quiet=False)
 
 
-def parse_location_partner(client_dir: Path) -> tuple[str | None, str | None]:
+def parse_location_partner(client_dir: Path) -> tuple[Optional[str], Optional[str]]:
     """The single expected subfolder of a client folder is named
     "<Location>_<Partner>" (the partner's base city, not necessarily the show
     venue - e.g. "Madrid_Standecor" for a Nantes show built by a Madrid-based
