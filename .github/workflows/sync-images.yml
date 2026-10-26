@@ -18,6 +18,10 @@ jobs:
       - name: Trigger Vercel deployment via deploy hook
         run: |
           echo "Triggered by: ${{ github.event_name }}"
+          if [ -z "$DEPLOY_HOOK" ]; then
+            echo "VERCEL_DEPLOY_HOOK_URL is not configured; skipping deploy trigger."
+            exit 0
+          fi
           curl --fail --silent --show-error --retry 3 --retry-delay 10 \
             -X POST "$DEPLOY_HOOK"
           echo "Vercel deployment triggered. Watch it at the Vercel dashboard."
